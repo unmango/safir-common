@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace Safir.Common.Messaging.Tests
+namespace Safir.Common.Tests
 {
     public class UnitTest1
     {

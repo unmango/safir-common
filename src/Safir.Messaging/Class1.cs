@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Safir.Common.Messaging
+namespace Safir.Messaging
 {
     public class Class1
     {
