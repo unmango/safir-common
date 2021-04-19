@@ -1,7 +1,9 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
-using Safir.Common.ConnectionPool.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Safir.Messaging.Configuration;
-using StackExchange.Redis;
+using Safir.Redis.Configuration;
+using Safir.Redis.DependencyInjection;
 
 namespace Safir.Messaging.DependencyInjection
 {
@@ -9,12 +11,24 @@ namespace Safir.Messaging.DependencyInjection
     {
         public static IServiceCollection AddSafirMessaging(this IServiceCollection services)
         {
-            services.AddLogging();
-            services.AddOptions<RedisOptions>();
-
-            services.AddConnectionPool<IConnectionMultiplexer, CreateRedisConnection>();
-            services.AddTransient<IEventBus, RedisEventBus>();
+            if (services == null) throw new ArgumentNullException(nameof(services));
             
+            services.AddLogging();
+            services.AddOptions<MessagingOptions>();
+
+            services.AddRedisClient();
+            services.AddTransient<IEventBus, RedisEventBus>();
+            services.AddTransient<IConfigureOptions<RedisOptions>, ConfigureRedisOptions>();
+            
+            return services;
+        }
+
+        public static IServiceCollection AddSafirMessaging(
+            this IServiceCollection services,
+            Action<MessagingOptions> configure)
+        {
+            services.AddSafirMessaging();
+            services.Configure(configure);
             return services;
         }
     }
