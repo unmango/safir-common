@@ -10,13 +10,20 @@ namespace Safir.Common.ConnectionPool
 {
     internal sealed class DefaultConnectionPool<T> : IConnectionPool<T>, IAsyncDisposable
     {
+        private readonly ICreateConnection<T> _createConnection;
+        private readonly IDisposeConnection<T> _disposeConnection;
         private readonly IOptions<ConnectionPoolOptions<T>> _configuration;
         private readonly ConcurrentBag<T> _connections = new();
         private readonly Func<IEnumerable<T>, T> _selector;
-        private volatile int _toSkip = 0;
+        private volatile int _roundRobin;
 
-        public DefaultConnectionPool(IOptions<ConnectionPoolOptions<T>> configuration)
+        public DefaultConnectionPool(
+            ICreateConnection<T> createConnection,
+            IDisposeConnection<T> disposeConnection,
+            IOptions<ConnectionPoolOptions<T>> configuration)
         {
+            _createConnection = createConnection ?? throw new ArgumentNullException(nameof(createConnection));
+            _disposeConnection = disposeConnection ?? throw new ArgumentNullException(nameof(disposeConnection));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _selector = configuration.Value.Selector ?? DefaultSelector;
         }
@@ -45,18 +52,18 @@ namespace Safir.Common.ConnectionPool
 
         private Task<T> ConnectAsync(CancellationToken cancellationToken)
         {
-            return _configuration.Value.CreateConnection(cancellationToken);
+            return _createConnection.ConnectAsync(cancellationToken);
         }
 
         private Task DisposeConnection(T connection)
         {
-            return _configuration.Value.DisposeConnection(connection);
+            return _disposeConnection.DisposeAsync(connection).AsTask();
         }
 
         private T DefaultSelector(IEnumerable<T> connections)
         {
-            _toSkip = (_toSkip + 1) % _connections.Count;
-            return connections.Skip(_toSkip).First();
+            _roundRobin = (_roundRobin + 1) % _connections.Count;
+            return connections.Skip(_roundRobin).First();
         }
     }
 }

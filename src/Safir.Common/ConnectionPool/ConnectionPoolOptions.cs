@@ -9,12 +9,8 @@ namespace Safir.Common.ConnectionPool
     {
         public const int DefaultSize = 10;
         
-        internal Func<CancellationToken, Task<T>> CreateConnection { get; set; }
-        
-        internal Func<T, Task> DisposeConnection { get; set; }
-        
         internal Func<IEnumerable<T>, T>? Selector { get; set; }
 
-        public int PoolSize { get; } = DefaultSize;
+        public int PoolSize { get; set; } = DefaultSize;
     }
 }
