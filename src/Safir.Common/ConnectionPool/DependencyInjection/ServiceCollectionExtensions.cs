@@ -50,6 +50,7 @@ namespace Safir.Common.ConnectionPool.DependencyInjection
             services.AddOptions();
             
             services.TryAddSingleton(typeof(IConnectionPool<>), typeof(DefaultConnectionPool<>));
+            services.TryAddTransient(typeof(IConnectionManager<>), typeof(DefaultConnectionManager<>));
             services.TryAddTransient(typeof(IDisposeConnection<>), typeof(DefaultDisposeConnection<>));
         }
     }
