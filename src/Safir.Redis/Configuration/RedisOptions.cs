@@ -1,4 +1,4 @@
-namespace Safir.Messaging.Configuration
+namespace Safir.Redis.Configuration
 {
     public class RedisOptions
     {

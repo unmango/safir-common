@@ -5,10 +5,10 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Safir.Common.ConnectionPool;
-using Safir.Messaging.Configuration;
+using Safir.Redis.Configuration;
 using StackExchange.Redis;
 
-namespace Safir.Messaging
+namespace Safir.Redis
 {
     [UsedImplicitly]
     internal sealed class CreateRedisConnection : ICreateConnection<IConnectionMultiplexer>
