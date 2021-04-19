@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Safir.Common\Safir.Common.csproj" />
     <ProjectReference Include="..\Safir.Messaging.Abstractions\Safir.Messaging.Abstractions.csproj" />
     <ProjectReference Include="..\Safir.Protos\Safir.Protos.csproj" />
   </ItemGroup>
