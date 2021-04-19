@@ -1,6 +1,5 @@
 ﻿using System;
 using MediatR;
-using Safir.Messaging.Abstractions;
 
 namespace Safir.Messaging.MediatR
 {

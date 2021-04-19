@@ -1,6 +1,6 @@
 // ReSharper disable CheckNamespace
 
-using Safir.Messaging.Abstractions;
+using Safir.Messaging;
 
 namespace Safir.Agent.Protos
 {

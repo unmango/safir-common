@@ -1,4 +1,4 @@
-namespace Safir.Messaging.Abstractions
+namespace Safir.Messaging
 {
     public interface IEvent { }
 }
