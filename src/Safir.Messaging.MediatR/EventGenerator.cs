@@ -28,7 +28,7 @@ namespace Safir.Agent.Protos.MediatR
             {
                 Debugger.Launch();
             }
-#endif 
+#endif
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }
 
@@ -42,9 +42,9 @@ namespace Safir.Agent.Protos.MediatR
                 Directory.Delete(generatedPath, true);
             Directory.CreateDirectory(generatedPath);
 #endif
-            
+
             if (context.SyntaxReceiver == null) return;
-            
+
             var receiver = (SyntaxReceiver)context.SyntaxReceiver;
 
             foreach (var type in receiver.Types)
@@ -63,20 +63,18 @@ namespace Safir.Agent.Protos.MediatR
             private readonly List<TypeDeclarationSyntax> _types = new();
 
             public IEnumerable<TypeDeclarationSyntax> Types => _types;
-            
+
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
                 if (syntaxNode is not ClassDeclarationSyntax classSyntax) return;
                 if (classSyntax.BaseList == null) return;
-                var events = classSyntax.BaseList.Types.Where(x =>
-                        x is SimpleBaseTypeSyntax &&
-                        x.Type is GenericNameSyntax { Identifier: { ValueText: "IEvent" } })
-                    .Select(x => x.Type)
-                    .Cast<GenericNameSyntax>()
-                    .ToList();
-
-                if (events.Count <= 0) return;
                 
+                var any = classSyntax.BaseList.Types.Any(x =>
+                    x is SimpleBaseTypeSyntax &&
+                    x.Type is GenericNameSyntax { Identifier: { ValueText: "IEvent" } });
+
+                if (!any) return;
+
                 _types.Add(classSyntax);
             }
         }

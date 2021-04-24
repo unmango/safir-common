@@ -8,6 +8,7 @@ namespace Safir.Messaging.MediatR.Tests
         [Fact]
         public void Test1()
         {
+            var temp = new FileCreated();
             Console.WriteLine("Some BULLSHIT");
         }
     }
