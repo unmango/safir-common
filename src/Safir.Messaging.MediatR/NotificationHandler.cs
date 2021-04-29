@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using MediatR;
 
 namespace Safir.Messaging.MediatR
@@ -14,6 +15,6 @@ namespace Safir.Messaging.MediatR
             return Handle(notification.Value, cancellationToken);
         }
 
-        protected abstract Task Handle(T notification, CancellationToken cancellationToken);
+        protected abstract Task Handle(T notification, [UsedImplicitly] CancellationToken cancellationToken);
     }
 }
