@@ -2,11 +2,14 @@ using System;
 using System.IO;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using ProtoBuf;
 using StackExchange.Redis;
 
 namespace Safir.Messaging
 {
+    // TODO: Handle abstractions in generic args
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public static class SubscriberExtensions
     {
         public static IObservable<T> CreateObservable<T>(this ISubscriber subscriber, RedisChannel channel)
