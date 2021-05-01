@@ -42,25 +42,36 @@ namespace Safir.Messaging
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            foreach (var subscription in _subscriptions)
+            {
+                subscription.Dispose();
+            }
+            
+            return Task.CompletedTask;
         }
 
         private void Subscribe(Type eventType, IEnumerable<IEventHandler> handlers)
         {
-            var getObservable = typeof(IEventBus).GetMethod(nameof(IEventBus.GetObservable));
-            var subscribe = typeof(EventBusExtensions).GetMethod(nameof(EventBusExtensions.Subscribe));
+            var subscribe = typeof(EventBusExtensions).GetMethod(
+                nameof(EventBusExtensions.Subscribe),
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(IEventBus), typeof(IEventHandler<>).MakeGenericType(eventType) },
+                null);
 
-            if (getObservable == null)
+            if (subscribe == null)
             {
-                _logger.LogError("Unable to retrieve IEventBus.GetObservable method");
+                _logger.LogError("Unable to retrieve EventBusExtensions.Subscribe method");
                 return;
             }
             
-            var closed = getObservable.MakeGenericMethod(eventType);
+            var closed = subscribe.MakeGenericMethod(eventType);
 
             foreach (var handler in handlers)
             {
+                var subscription = closed.Invoke(null, new object[] { _eventBus, handler });
                 
+                _subscriptions.Add((IDisposable)subscription);
             }
         }
     }
