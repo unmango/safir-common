@@ -16,6 +16,10 @@ namespace Safir.Messaging.DependencyInjection
         public static IServiceCollection AddEventHandler<T>(this IServiceCollection services)
             where T : class, IEventHandler
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            
+            services.AddSafirMessaging();
+            
             services.AddHostedService<SubscriptionManager>();
             services.TryAddEnumerable(ServiceDescriptor.Transient<IEventHandler, T>());
 
@@ -31,7 +35,7 @@ namespace Safir.Messaging.DependencyInjection
 
             services.AddRedisClient();
             services.AddTransient<IEventBus, RedisEventBus>();
-            services.AddTransient(typeof(IEventBus<>), typeof(DefaultEventBus<>));
+            services.AddTransient(typeof(IEventBus<>), typeof(DefaultTypedEventBus<>));
             services.AddTransient<IConfigureOptions<RedisOptions>, ConfigureRedisOptions>();
             
             return services;
