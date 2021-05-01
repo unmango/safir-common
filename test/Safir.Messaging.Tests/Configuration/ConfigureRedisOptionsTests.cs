@@ -10,11 +10,13 @@ namespace Safir.Messaging.Tests.Configuration
     {
         private readonly AutoMocker _mocker = new();
         private readonly MessagingOptions _messagingOptions = new();
+        private readonly ConfigureRedisOptions _configureOptions;
 
         public ConfigureRedisOptionsTests()
         {
             var mockOptions = _mocker.GetMock<IOptions<MessagingOptions>>();
             mockOptions.SetupGet(x => x.Value).Returns(_messagingOptions);
+            _configureOptions = _mocker.CreateInstance<ConfigureRedisOptions>();
         }
 
         [Fact]
@@ -22,10 +24,9 @@ namespace Safir.Messaging.Tests.Configuration
         {
             const string connectionString = "connection string";
             _messagingOptions.ConnectionString = connectionString;
-            var configureOptions = _mocker.CreateInstance<ConfigureRedisOptions>();
             var redisOptions = new RedisOptions();
 
-            configureOptions.Configure(redisOptions);
+            _configureOptions.Configure(redisOptions);
             
             Assert.Equal(connectionString, redisOptions.Configuration);
         }
