@@ -5,15 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Safir.Messaging
 {
-    internal sealed class DefaultEventBus<T> : IEventBus<T>
+    internal sealed class DefaultTypedEventBus<T> : IEventBus<T>
         where T : IEvent
     {
         private readonly IEventBus _eventBus;
-        private readonly ILogger<DefaultEventBus<T>> _logger;
+        private readonly ILogger<DefaultTypedEventBus<T>> _logger;
 
-        public DefaultEventBus(IEventBus eventBus, ILogger<DefaultEventBus<T>> logger)
+        public DefaultTypedEventBus(IEventBus eventBus, ILogger<DefaultTypedEventBus<T>> logger)
         {
-            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(DefaultEventBus<T>));
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(DefaultTypedEventBus<T>));
             _logger = logger;
         }
         
