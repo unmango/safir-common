@@ -22,5 +22,9 @@
     <ProjectReference Include="..\Safir.Protos\Safir.Protos.csproj" />
     <ProjectReference Include="..\Safir.Redis\Safir.Redis.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="Safir.Messaging.Tests" />
+  </ItemGroup>
 
 </Project>
