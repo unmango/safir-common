@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Safir.Common.ConnectionPool;
@@ -29,12 +30,13 @@ namespace Safir.Messaging
             return subscriber.CreateObservable<T>(nameof(T));
         }
 
-        public Task PublishAsync<T>(T message) where T : IEvent
+        public async Task PublishAsync<T>(T message, CancellationToken cancellationToken = default) where T : IEvent
         {
             _logger.LogTrace("Getting connection subscriber");
             var subscriber = Connection.GetSubscriber();
             _logger.LogTrace("Publishing message");
-            return subscriber.PublishAsync(nameof(T), message);
+            var receivers = await subscriber.PublishAsync(nameof(T), message);
+            _logger.LogDebug("{Count} clients received the message", receivers);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Safir.Messaging
             });
         }
 
-        public static Task PublishAsync<T>(this ISubscriber subscriber, RedisChannel channel, T message)
+        public static Task<long> PublishAsync<T>(this ISubscriber subscriber, RedisChannel channel, T message)
         {
             using var stream = new MemoryStream();
             Serializer.Serialize(stream, message);
