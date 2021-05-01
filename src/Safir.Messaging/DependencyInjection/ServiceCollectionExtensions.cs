@@ -2,6 +2,7 @@ using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Safir.Messaging.Configuration;
 using Safir.Redis.Configuration;
@@ -15,6 +16,7 @@ namespace Safir.Messaging.DependencyInjection
         public static IServiceCollection AddEventHandler<T>(this IServiceCollection services)
             where T : class, IEventHandler
         {
+            services.AddHostedService<SubscriptionManager>();
             services.TryAddEnumerable(ServiceDescriptor.Transient<IEventHandler, T>());
 
             return services;
@@ -29,6 +31,7 @@ namespace Safir.Messaging.DependencyInjection
 
             services.AddRedisClient();
             services.AddTransient<IEventBus, RedisEventBus>();
+            services.AddTransient(typeof(IEventBus<>), typeof(DefaultEventBus<>));
             services.AddTransient<IConfigureOptions<RedisOptions>, ConfigureRedisOptions>();
             
             return services;
