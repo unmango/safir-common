@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
@@ -53,7 +52,7 @@ namespace Safir.Messaging.Tests
             await _eventBus.PublishAsync(message);
             
             _connection.Verify(x => x.GetSubscriber(It.IsAny<object>()));
-            _subscriber.Verify(x => x.PublishAsync("MockEvent", message));
+            _subscriber.Verify(x => x.PublishAsync("MockEvent", It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()));
         }
     }
 }
