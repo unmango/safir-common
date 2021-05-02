@@ -27,7 +27,7 @@ namespace Safir.Messaging
             _logger.LogTrace("Getting connection subscriber");
             var subscriber = Connection.GetSubscriber();
             _logger.LogTrace("Creating observable from subscriber");
-            return subscriber.CreateObservable<T>(nameof(T));
+            return subscriber.CreateObservable<T>(typeof(T).Name);
         }
 
         public async Task PublishAsync<T>(T message, CancellationToken cancellationToken = default) where T : IEvent
@@ -35,7 +35,7 @@ namespace Safir.Messaging
             _logger.LogTrace("Getting connection subscriber");
             var subscriber = Connection.GetSubscriber();
             _logger.LogTrace("Publishing message");
-            var receivers = await subscriber.PublishAsync(nameof(T), message);
+            var receivers = await subscriber.PublishAsync(typeof(T).Name, message);
             _logger.LogDebug("{Count} clients received the message", receivers);
         }
     }
