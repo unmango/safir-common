@@ -14,13 +14,6 @@ namespace Safir.Messaging
     {
         private static MessagePackSerializerOptions _serializerOptions = ContractlessStandardResolver.Options;
         
-        public static IObservable<T> CreateObservable<T>(this ISubscriber subscriber, RedisChannel channel)
-        {
-            return Observable.Create<T>(observer => subscriber.SubscribeAsync(channel, (_, value) => {
-                observer.OnNext(Deserialize<T>(value));
-            }));
-        }
-        
         public static IObservable<T> AsObservable<T>(this ChannelMessageQueue queue)
         {
             return Observable.Create<T>(observer => () => {
@@ -28,6 +21,13 @@ namespace Safir.Messaging
                     observer.OnNext(Deserialize<T>(channelMessage.Message));
                 });
             });
+        }
+        
+        public static IObservable<T> CreateObservable<T>(this ISubscriber subscriber, RedisChannel channel)
+        {
+            return Observable.Create<T>(observer => subscriber.SubscribeAsync(channel, (_, value) => {
+                observer.OnNext(Deserialize<T>(value));
+            }));
         }
 
         public static Task<long> PublishAsync<T>(this ISubscriber subscriber, RedisChannel channel, T message)
