@@ -8,7 +8,7 @@ using StackExchange.Redis;
 
 namespace Safir.Messaging
 {
-    // TODO: Handle abstractions in generic args
+    // TODO: Handle abstractions in generic args like IEvent
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public static class SubscriberExtensions
     {
@@ -17,8 +17,7 @@ namespace Safir.Messaging
         public static IObservable<T> CreateObservable<T>(this ISubscriber subscriber, RedisChannel channel)
         {
             return Observable.Create<T>(observer => subscriber.SubscribeAsync(channel, (_, value) => {
-                var message = MessagePackSerializer.Deserialize<T>(value, _serializerOptions);
-                observer.OnNext(message);
+                observer.OnNext(Deserialize<T>(value));
             }));
         }
         
@@ -26,16 +25,24 @@ namespace Safir.Messaging
         {
             return Observable.Create<T>(observer => () => {
                 queue.OnMessage(channelMessage => {
-                    var message = MessagePackSerializer.Deserialize<T>(channelMessage.Message, _serializerOptions);
-                    observer.OnNext(message);
+                    observer.OnNext(Deserialize<T>(channelMessage.Message));
                 });
             });
         }
 
         public static Task<long> PublishAsync<T>(this ISubscriber subscriber, RedisChannel channel, T message)
         {
-            var serialized = MessagePackSerializer.Serialize(message, _serializerOptions);
-            return subscriber.PublishAsync(channel, serialized);
+            return subscriber.PublishAsync(channel, Serialize(message));
+        }
+
+        private static T Deserialize<T>(RedisValue value)
+        {
+            return MessagePackSerializer.Deserialize<T>(value, _serializerOptions);
+        }
+
+        private static RedisValue Serialize<T>(T message)
+        {
+            return MessagePackSerializer.Serialize(message, _serializerOptions);
         }
     }
 }
