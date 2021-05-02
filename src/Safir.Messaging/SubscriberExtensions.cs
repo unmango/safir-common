@@ -1,9 +1,9 @@
 using System;
-using System.IO;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using ProtoBuf;
+using MessagePack;
+using MessagePack.Resolvers;
 using StackExchange.Redis;
 
 namespace Safir.Messaging
@@ -12,11 +12,12 @@ namespace Safir.Messaging
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public static class SubscriberExtensions
     {
+        private static MessagePackSerializerOptions _serializerOptions = ContractlessStandardResolver.Options;
+        
         public static IObservable<T> CreateObservable<T>(this ISubscriber subscriber, RedisChannel channel)
         {
             return Observable.Create<T>(observer => subscriber.SubscribeAsync(channel, (_, value) => {
-                using var stream = new MemoryStream(value);
-                var message = Serializer.Deserialize<T>(stream);
+                var message = MessagePackSerializer.Deserialize<T>(value, _serializerOptions);
                 observer.OnNext(message);
             }));
         }
@@ -25,8 +26,7 @@ namespace Safir.Messaging
         {
             return Observable.Create<T>(observer => () => {
                 queue.OnMessage(channelMessage => {
-                    using var stream = new MemoryStream(channelMessage.Message);
-                    var message = Serializer.Deserialize<T>(stream);
+                    var message = MessagePackSerializer.Deserialize<T>(channelMessage.Message, _serializerOptions);
                     observer.OnNext(message);
                 });
             });
@@ -34,9 +34,8 @@ namespace Safir.Messaging
 
         public static Task<long> PublishAsync<T>(this ISubscriber subscriber, RedisChannel channel, T message)
         {
-            using var stream = new MemoryStream();
-            Serializer.Serialize(stream, message);
-            return subscriber.PublishAsync(channel, stream.ToArray());
+            var serialized = MessagePackSerializer.Serialize(message, _serializerOptions);
+            return subscriber.PublishAsync(channel, serialized);
         }
     }
 }
