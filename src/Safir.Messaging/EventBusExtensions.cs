@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -25,6 +26,26 @@ namespace Safir.Messaging
             {
                 await handler.HandleAsync(message, cancellationToken);
                 return Unit.Default;
+            }
+        }
+
+        internal static IEnumerable<IDisposable> Subscribe(
+            this IEventBus bus,
+            Type eventType,
+            IEnumerable<IEventHandler> handlers)
+        {
+            var subscribe = typeof(EventBusExtensions).GetMethod(
+                nameof(Subscribe),
+                genericParameterCount: 1,
+                new[] { typeof(IEventBus), typeof(IEventHandler<>) });
+
+            if (subscribe == null) throw new NotSupportedException("Unable to get subscribe method");
+
+            var closed = subscribe.MakeGenericMethod(eventType);
+
+            foreach (var handler in handlers)
+            {
+                yield return (IDisposable)closed.Invoke(null, new object[] { bus, handler });
             }
         }
     }

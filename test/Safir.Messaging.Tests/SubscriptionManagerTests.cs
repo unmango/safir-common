@@ -33,8 +33,7 @@ namespace Safir.Messaging.Tests
         public async Task StartAsync_StartsWithSingleHandler()
         {
             var handler = _mocker.GetMock<IEventHandler<MockEvent>>();
-            var temp = new MockEventHandler();
-            _mocker.Use(typeof(IEnumerable<IEventHandler>), new[] { temp });
+            _mocker.Use(typeof(IEnumerable<IEventHandler>), new[] { handler.Object });
             var manager = _mocker.CreateInstance<SubscriptionManager>();
 
             await manager.StartAsync(_cancellationToken);

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -28,9 +26,7 @@ namespace Safir.Messaging
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            // ReSharper disable once UseIsOperator.2
-            var relevant = _handlers.Where(x => typeof(IEventHandler<>).IsInstanceOfType(x));
-            var grouped = relevant.GroupBy(x => x.GetType().GetGenericArguments()[0]);
+            var grouped = _handlers.GroupByEvent();
             
             foreach (var handlers in grouped)
             {
@@ -52,27 +48,7 @@ namespace Safir.Messaging
 
         private void Subscribe(Type eventType, IEnumerable<IEventHandler> handlers)
         {
-            var subscribe = typeof(EventBusExtensions).GetMethod(
-                nameof(EventBusExtensions.Subscribe),
-                BindingFlags.Public | BindingFlags.Static,
-                null,
-                new[] { typeof(IEventBus), typeof(IEventHandler<>).MakeGenericType(eventType) },
-                null);
-
-            if (subscribe == null)
-            {
-                _logger.LogError("Unable to retrieve EventBusExtensions.Subscribe method");
-                return;
-            }
-            
-            var closed = subscribe.MakeGenericMethod(eventType);
-
-            foreach (var handler in handlers)
-            {
-                var subscription = closed.Invoke(null, new object[] { _eventBus, handler });
-                
-                _subscriptions.Add((IDisposable)subscription);
-            }
+            _subscriptions.AddRange(_eventBus.Subscribe(eventType, handlers));
         }
     }
 }
