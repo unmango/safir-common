@@ -42,10 +42,40 @@ namespace Safir.Messaging.Tests
             _eventBus.Setup(x => x.GetObservable<MockEvent>()).Returns(observable);
             var handler = _mocker.GetMock<IEventHandler<MockEvent>>();
 
-            _eventBus.Object.Subscribe(handler.Object);
-            observable.OnNext(new());
+            var subscription = _eventBus.Object.Subscribe(handler.Object);
 
+            Assert.NotNull(subscription);
             _eventBus.Verify(x => x.GetObservable<MockEvent>());
+            
+            observable.OnNext(new());
+            
+            handler.Verify(x => x.HandleAsync(It.IsAny<MockEvent>(), It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public void Subscribe_ThrowsWhenTypeIsNotEventType()
+        {
+            var handler = _mocker.Get<IEventHandler<MockEvent>>();
+
+            Assert.Throws<InvalidOperationException>(
+                () => _eventBus.Object.Subscribe(typeof(object), new[] { handler }));
+        }
+
+        [Fact]
+        public void Subscribe_SubscribesNonGenericHandlerToEventType()
+        {
+            var observable = new Subject<MockEvent>();
+            _eventBus.Setup(x => x.GetObservable<MockEvent>()).Returns(observable);
+            var handler = _mocker.GetMock<IEventHandler<MockEvent>>();
+
+            var subscriptions = _eventBus.Object.Subscribe(typeof(MockEvent), new[] { handler.Object });
+            
+            Assert.NotNull(subscriptions);
+            Assert.Single(subscriptions);
+            _eventBus.Verify(x => x.GetObservable<MockEvent>());
+            
+            observable.OnNext(new());
+            
             handler.Verify(x => x.HandleAsync(It.IsAny<MockEvent>(), It.IsAny<CancellationToken>()));
         }
     }

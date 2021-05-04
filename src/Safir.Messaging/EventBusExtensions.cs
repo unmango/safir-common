@@ -29,24 +29,25 @@ namespace Safir.Messaging
             }
         }
 
+        public static IEnumerable<IDisposable> Subscribe<T>(this IEventBus bus, IEnumerable<IEventHandler<T>> handlers)
+            where T : IEvent
+        {
+            return bus.Subscribe(typeof(T), handlers);
+        }
+
         internal static IEnumerable<IDisposable> Subscribe(
             this IEventBus bus,
             Type eventType,
             IEnumerable<IEventHandler> handlers)
         {
-            var subscribe = typeof(EventBusExtensions).GetMethod(
-                nameof(Subscribe),
-                genericParameterCount: 1,
-                new[] { typeof(IEventBus), typeof(IEventHandler<>) });
-
-            if (subscribe == null) throw new NotSupportedException("Unable to get subscribe method");
-
-            var closed = subscribe.MakeGenericMethod(eventType);
-
-            foreach (var handler in handlers)
+            if (!typeof(IEvent).IsAssignableFrom(eventType))
             {
-                yield return (IDisposable)closed.Invoke(null, new object[] { bus, handler });
+                throw new InvalidOperationException("eventType is not assignable to IEvent");
             }
+            
+            var wrapperType = typeof(SubscribeHandlerWrapper<>).MakeGenericType(eventType);
+            var wrapped = (ISubscribeHandlerWrapper)Activator.CreateInstance(wrapperType);
+            return wrapped.Subscribe(bus, handlers);
         }
     }
 }
