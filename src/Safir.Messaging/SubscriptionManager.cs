@@ -26,29 +26,27 @@ namespace Safir.Messaging
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var grouped = _handlers.GroupByEvent();
-            
-            foreach (var handlers in grouped)
+            _logger.LogDebug("Starting subscription manager");
+            foreach (var group in _handlers.GroupByEvent())
             {
-                Subscribe(handlers.Key, handlers);
+                _logger.LogTrace("Subscribing handlers for event type {Type}", group.Key);
+                _subscriptions.AddRange(_eventBus.Subscribe(group.Key, group));
             }
             
+            _logger.LogTrace("Exiting StartAsync");
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _logger.LogDebug("Stopping subscription manager");
             foreach (var subscription in _subscriptions)
             {
                 subscription.Dispose();
             }
             
+            _logger.LogTrace("Exiting StopAsync");
             return Task.CompletedTask;
-        }
-
-        private void Subscribe(Type eventType, IEnumerable<IEventHandler> handlers)
-        {
-            _subscriptions.AddRange(_eventBus.Subscribe(eventType, handlers));
         }
     }
 }
