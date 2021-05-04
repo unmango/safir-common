@@ -44,8 +44,8 @@ namespace Safir.Messaging.Tests
             Assert.NotNull(types);
             Assert.Collection(
                 types,
-                x => Assert.Equal(x, typeof(MockEvent)),
-                x => Assert.Equal(x, typeof(MockEvent2)));
+                x => Assert.Equal(typeof(MockEvent), x),
+                x => Assert.Equal(typeof(MockEvent2), x));
         }
 
         [Fact]
