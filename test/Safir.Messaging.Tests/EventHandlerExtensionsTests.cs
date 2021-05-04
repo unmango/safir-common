@@ -6,6 +6,8 @@ using JetBrains.Annotations;
 using Safir.Messaging.Tests.Fakes;
 using Xunit;
 
+// ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
+
 namespace Safir.Messaging.Tests
 {
     public class EventHandlerExtensionsTests
@@ -105,7 +107,7 @@ namespace Safir.Messaging.Tests
             var handlers = new[] { new NonGenericHandler() };
 
             var grouped = handlers.GroupByEvent();
-            
+
             Assert.NotNull(grouped);
             Assert.Empty(grouped);
         }
@@ -118,7 +120,7 @@ namespace Safir.Messaging.Tests
             var handlers = new[] { handler1, handler2 };
 
             var grouped = handlers.GroupByEvent();
-            
+
             Assert.NotNull(grouped);
             var item = Assert.Single(grouped);
             Assert.Equal(typeof(MockEvent), item!.Key);
@@ -138,7 +140,7 @@ namespace Safir.Messaging.Tests
             var handlers = new IEventHandler[] { handler1, handler2, handler3, handler4 };
 
             var grouped = handlers.GroupByEvent();
-            
+
             Assert.NotNull(grouped);
             Assert.Collection(
                 grouped,
@@ -154,7 +156,7 @@ namespace Safir.Messaging.Tests
             {
                 Assert.NotNull(grouping.Key);
                 Assert.Equal(expectedType, grouping.Key);
-            
+
                 Assert.Collection(
                     grouping,
                     x => Assert.Same(expectedHandler1, x),
@@ -169,7 +171,7 @@ namespace Safir.Messaging.Tests
             var handlers = new[] { handler };
 
             var grouped = handlers.GroupByEvent();
-            
+
             Assert.NotNull(grouped);
             Assert.Collection(
                 grouped,

@@ -1,12 +1,9 @@
-using Moq.AutoMock;
 using Xunit;
 
 namespace Safir.Common.Tests
 {
     public class TypeExtensionsTests
     {
-        private readonly AutoMocker _mocker = new();
-
         [Fact]
         public void IsAssignableToGeneric_ReturnsTrueWhenConcreteIsClosedGenericOpenInterface()
         {
@@ -18,6 +15,7 @@ namespace Safir.Common.Tests
             Assert.True(result);
         }
         
+        // ReSharper disable once UnusedTypeParameter
         private interface IOpen<T> { }
         
         private class Closed : IOpen<int> { }
