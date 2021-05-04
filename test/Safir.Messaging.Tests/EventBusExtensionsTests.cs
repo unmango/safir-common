@@ -13,43 +13,45 @@ namespace Safir.Messaging.Tests
     public class EventBusExtensionsTests
     {
         private readonly AutoMocker _mocker = new();
+        private readonly Subject<MockEvent> _eventSubject = new();
         private readonly Mock<IEventBus> _eventBus;
 
         public EventBusExtensionsTests()
         {
             _eventBus = _mocker.GetMock<IEventBus>();
+            _eventBus.Setup(x => x.GetObservable<MockEvent>()).Returns(_eventSubject);
         }
 
         [Fact]
         public void Subscribe_SubscribesActionCallback()
         {
-            var observable = new Subject<MockEvent>();
-            _eventBus.Setup(x => x.GetObservable<MockEvent>()).Returns(observable);
-            var flag = false;
-            Action<MockEvent> callback = _ => flag = true;
+            MockEvent? captured = null;
+            Action<MockEvent> callback = x => captured = x;
+            var expectedEvent = new MockEvent();
 
             _eventBus.Object.Subscribe(callback);
-            observable.OnNext(new());
 
             _eventBus.Verify(x => x.GetObservable<MockEvent>());
-            Assert.True(flag);
+            
+            _eventSubject.OnNext(expectedEvent);
+            
+            Assert.Same(expectedEvent, captured);
         }
 
         [Fact]
         public void Subscribe_SubscribesEventHandler()
         {
-            var observable = new Subject<MockEvent>();
-            _eventBus.Setup(x => x.GetObservable<MockEvent>()).Returns(observable);
             var handler = _mocker.GetMock<IEventHandler<MockEvent>>();
+            var expectedEvent = new MockEvent();
 
             var subscription = _eventBus.Object.Subscribe(handler.Object);
 
             Assert.NotNull(subscription);
             _eventBus.Verify(x => x.GetObservable<MockEvent>());
             
-            observable.OnNext(new());
+            _eventSubject.OnNext(expectedEvent);
             
-            handler.Verify(x => x.HandleAsync(It.IsAny<MockEvent>(), It.IsAny<CancellationToken>()));
+            handler.Verify(x => x.HandleAsync(expectedEvent, It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -64,9 +66,8 @@ namespace Safir.Messaging.Tests
         [Fact]
         public void Subscribe_SubscribesNonGenericHandlerToEventType()
         {
-            var observable = new Subject<MockEvent>();
-            _eventBus.Setup(x => x.GetObservable<MockEvent>()).Returns(observable);
             var handler = _mocker.GetMock<IEventHandler<MockEvent>>();
+            var expectedEvent = new MockEvent();
 
             var subscriptions = _eventBus.Object.Subscribe(typeof(MockEvent), new[] { handler.Object });
             
@@ -74,9 +75,9 @@ namespace Safir.Messaging.Tests
             Assert.Single(subscriptions);
             _eventBus.Verify(x => x.GetObservable<MockEvent>());
             
-            observable.OnNext(new());
+            _eventSubject.OnNext(expectedEvent);
             
-            handler.Verify(x => x.HandleAsync(It.IsAny<MockEvent>(), It.IsAny<CancellationToken>()));
+            handler.Verify(x => x.HandleAsync(expectedEvent, It.IsAny<CancellationToken>()));
         }
     }
 }
