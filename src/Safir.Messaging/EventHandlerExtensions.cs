@@ -9,30 +9,19 @@ namespace Safir.Messaging
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public static class EventHandlerExtensions
     {
-        public static Type GetEventType(this IEventHandler handler)
+        public static IEnumerable<Type> GetEventTypes(this IEventHandler handler)
         {
-            if (!IsGenericHandler(handler))
-            {
-                throw new InvalidOperationException("Handler is not generic handler");
-            }
-
-            var type = handler.GetType()
+            return handler.GetType()
                 .GetInterfaces()
-                .FirstOrDefault(IsGenericHandler);
-
-            if (type == null) throw new InvalidOperationException("Unable to get event type from non-generic handler");
-            
-            return type.GetGenericArguments()[0];
+                .Where(IsGenericHandler)
+                .Select(x => x.GetGenericArguments()[0]);
         }
         
         public static IEnumerable<IGrouping<Type, IEventHandler>> GroupByEvent(this IEnumerable<IEventHandler> handlers)
         {
-            return handlers.Where(IsGenericHandler).GroupBy(GetEventType);
-        }
-
-        public static bool IsGenericHandler(this Type type)
-        {
-            return type.IsAssignableToGeneric(typeof(IEventHandler<>));
+            return handlers.Where(IsGenericHandler)
+                .SelectMany(x => x.GetEventTypes(), (handler, type) => new { handler, type })
+                .GroupBy(x => x.type, x => x.handler);
         }
 
         public static bool IsGenericHandler(this IEventHandler handler)
@@ -40,15 +29,9 @@ namespace Safir.Messaging
             return handler.GetType().IsGenericHandler();
         }
 
-        private static bool TryGetGenericHandlerType(this IEventHandler handler, out Type? type)
+        private static bool IsGenericHandler(this Type type)
         {
-            type = null;
-            
-            if (!handler.IsGenericHandler()) return false;
-
-            type = handler.GetEventType();
-
-            return true;
+            return type.IsAssignableToGeneric(typeof(IEventHandler<>));
         }
     }
 }
