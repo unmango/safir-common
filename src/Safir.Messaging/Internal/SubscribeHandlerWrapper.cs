@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Safir.Messaging
+namespace Safir.Messaging.Internal
 {
     internal sealed class SubscribeHandlerWrapper<T> : ISubscribeHandlerWrapper
         where T : IEvent

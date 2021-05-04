@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Safir.Messaging
+namespace Safir.Messaging.Internal
 {
     internal interface ISubscribeHandlerWrapper
     {

@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Safir.Messaging.Internal;
 
 namespace Safir.Messaging
 {
