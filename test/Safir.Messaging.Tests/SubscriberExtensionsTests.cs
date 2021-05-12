@@ -1,4 +1,8 @@
+using System;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using MessagePack;
+using MessagePack.Resolvers;
 using Moq;
 using Moq.AutoMock;
 using Safir.Messaging.Tests.Fakes;
@@ -12,6 +16,7 @@ namespace Safir.Messaging.Tests
     {
         private readonly AutoMocker _mocker = new();
         private readonly Mock<ISubscriber> _subscriber;
+        private readonly Mock<IObserver<MockEvent>> _observer = new();
 
         public SubscriberExtensionsTests()
         {
@@ -19,13 +24,50 @@ namespace Safir.Messaging.Tests
         }
 
         [Fact]
+        public void CreateObservable_ConnectsObservable()
+        {
+            const string channel = "MockEvent";
+            var subject = new Subject<MockEvent>();
+            var subscriber = new FakeSubscriber(subject);
+            var notification = new MockEvent();
+
+            subscriber.CreateObservable<MockEvent>(channel).Subscribe(_observer.Object);
+            subject.OnNext(notification);
+            
+            _observer.Verify(x => x.OnNext(notification));
+        }
+
+        [Fact]
         public async Task PublishAsync_PublishesToRedisSubscriber()
         {
             const string channel = "MockEvent";
-            
+
             await _subscriber.Object.PublishAsync(channel, new MockEvent());
-            
+
             _subscriber.Verify(x => x.PublishAsync(channel, It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()));
+        }
+
+        private class FakeSubscriber : MockSubscriberBase
+        {
+            private readonly ISubject<MockEvent> _subject;
+
+            public FakeSubscriber(ISubject<MockEvent> subject)
+            {
+                _subject = subject;
+            }
+
+            public override Task SubscribeAsync(
+                RedisChannel channel,
+                Action<RedisChannel, RedisValue> handler,
+                CommandFlags flags = CommandFlags.None)
+            {
+                _subject.Subscribe(x => {
+                    var value = MessagePackSerializer.Serialize(x, ContractlessStandardResolver.Options);
+                    handler(channel, value);
+                });
+                
+                return Task.CompletedTask;
+            }
         }
     }
 }
