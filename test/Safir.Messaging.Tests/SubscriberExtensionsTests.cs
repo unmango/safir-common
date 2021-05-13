@@ -16,7 +16,6 @@ namespace Safir.Messaging.Tests
     {
         private readonly AutoMocker _mocker = new();
         private readonly Mock<ISubscriber> _subscriber;
-        private readonly Mock<IObserver<MockEvent>> _observer = new();
 
         public SubscriberExtensionsTests()
         {
@@ -30,11 +29,12 @@ namespace Safir.Messaging.Tests
             var subject = new Subject<MockEvent>();
             var subscriber = new FakeSubscriber(subject);
             var notification = new MockEvent();
+            var flag = false;
 
-            subscriber.CreateObservable<MockEvent>(channel).Subscribe(_observer.Object);
+            subscriber.CreateObservable<MockEvent>(channel).Subscribe(_ => flag = true);
             subject.OnNext(notification);
             
-            _observer.Verify(x => x.OnNext(notification));
+            Assert.True(flag);
         }
 
         [Fact]
