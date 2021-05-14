@@ -12,6 +12,14 @@ namespace Safir.Messaging
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public static class EventBusExtensions
     {
+        public static IObservable<T> GetObservable<T>(this IEventBus bus) where T : IEvent
+        {
+            return Observable.Create<T>(observable => {
+                var syncObservable = Observer.Synchronize(observable);
+                return bus.SubscribeAsync<T>(syncObservable.OnNext);
+            });
+        }
+        
         public static IDisposable Subscribe<T>(this IEventBus bus, Action<T> callback)
             where T : IEvent
         {
