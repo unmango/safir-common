@@ -19,7 +19,7 @@ namespace Safir.Messaging
                 return bus.SubscribeAsync<T>(syncObservable.OnNext);
             });
         }
-        
+
         public static IDisposable Subscribe<T>(this IEventBus bus, Action<T> callback)
             where T : IEvent
         {
@@ -53,7 +53,7 @@ namespace Safir.Messaging
             {
                 throw new InvalidOperationException("eventType is not assignable to IEvent");
             }
-            
+
             var wrapperType = typeof(SubscribeHandlerWrapper<>).MakeGenericType(eventType);
             var wrapped = (ISubscribeHandlerWrapper)Activator.CreateInstance(wrapperType);
             return wrapped.Subscribe(bus, handlers);

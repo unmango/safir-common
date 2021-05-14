@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Linq;
 using System.Threading;
 using Moq;
 using Moq.AutoMock;
@@ -30,6 +31,17 @@ namespace Safir.Messaging.Tests
             observable.Subscribe();
             
             _eventBus.Verify(x => x.SubscribeAsync(It.IsAny<Action<MockEvent>>(), _cancellationToken));
+        }
+
+        [Fact]
+        public void GetObservable_ReturnsEmptyWhenSubscribeThrows()
+        {
+            _eventBus.Setup(x => x.SubscribeAsync(It.IsAny<Action<MockEvent>>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new Exception("Test exception"));
+            
+            var observable = _eventBus.Object.GetObservable<MockEvent>();
+            
+            Assert.Equal(Observable.Empty<MockEvent>(), observable);
         }
 
         [Fact]
