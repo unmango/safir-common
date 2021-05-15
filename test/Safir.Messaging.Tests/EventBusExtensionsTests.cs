@@ -34,14 +34,14 @@ namespace Safir.Messaging.Tests
         }
 
         [Fact]
-        public void GetObservable_ReturnsEmptyWhenSubscribeThrows()
+        public void GetObservable_ThrowsWhenSubscribed()
         {
             _eventBus.Setup(x => x.SubscribeAsync(It.IsAny<Action<MockEvent>>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new Exception("Test exception"));
             
             var observable = _eventBus.Object.GetObservable<MockEvent>();
-            
-            Assert.Equal(Observable.Empty<MockEvent>(), observable);
+
+            Assert.Throws<Exception>(() => observable.Subscribe());
         }
 
         [Fact]
