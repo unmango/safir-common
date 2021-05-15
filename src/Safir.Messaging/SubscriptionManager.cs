@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -30,7 +32,13 @@ namespace Safir.Messaging
             foreach (var group in _handlers.GroupByEvent())
             {
                 _logger.LogTrace("Subscribing handlers for event type {Type}", group.Key);
-                _subscriptions.AddRange(_eventBus.Subscribe(group.Key, group));
+                var subscriptions = _eventBus.Subscribe(group.Key, group)
+                    .Select(x => x.IfFail(e => {
+                        _logger.LogError(e, "Handler failed to subscribe");
+                        return Disposable.Empty;
+                    }));
+                
+                _subscriptions.AddRange(subscriptions);
             }
             
             _logger.LogTrace("Exiting StartAsync");

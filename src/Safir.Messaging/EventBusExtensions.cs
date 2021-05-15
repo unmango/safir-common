@@ -5,6 +5,8 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using LanguageExt;
+using LanguageExt.Common;
 using Safir.Messaging.Internal;
 
 namespace Safir.Messaging
@@ -31,20 +33,22 @@ namespace Safir.Messaging
         {
             return bus.GetObservable<T>().SelectMany(HandleAsync).Subscribe();
 
-            async Task<Unit> HandleAsync(T message, CancellationToken cancellationToken)
+            async Task<System.Reactive.Unit> HandleAsync(T message, CancellationToken cancellationToken)
             {
                 await handler.HandleAsync(message, cancellationToken);
-                return Unit.Default;
+                return System.Reactive.Unit.Default;
             }
         }
 
-        public static IEnumerable<IDisposable> Subscribe<T>(this IEventBus bus, IEnumerable<IEventHandler<T>> handlers)
+        public static IEnumerable<Result<IDisposable>> Subscribe<T>(
+            this IEventBus bus,
+            IEnumerable<IEventHandler<T>> handlers)
             where T : IEvent
         {
             return bus.Subscribe(typeof(T), handlers);
         }
 
-        internal static IEnumerable<IDisposable> Subscribe(
+        internal static IEnumerable<Result<IDisposable>> Subscribe(
             this IEventBus bus,
             Type eventType,
             IEnumerable<IEventHandler> handlers)
