@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using LanguageExt.Common;
 
 namespace Safir.Messaging.Internal
 {
-    internal interface ISubscribeHandlerWrapper
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public interface ISubscribeHandlerWrapper
     {
         IDisposable Subscribe(IEventBus bus, IEventHandler handler);
     }
