@@ -32,10 +32,10 @@ namespace Safir.Messaging
         {
             return bus.GetObservable<T>().SelectMany(HandleAsync).Subscribe();
 
-            async Task<System.Reactive.Unit> HandleAsync(T message, CancellationToken cancellationToken)
+            async Task<Unit> HandleAsync(T message, CancellationToken cancellationToken)
             {
                 await handler.HandleAsync(message, cancellationToken);
-                return System.Reactive.Unit.Default;
+                return Unit.Default;
             }
         }
 
