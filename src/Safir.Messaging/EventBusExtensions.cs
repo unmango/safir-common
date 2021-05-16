@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using LanguageExt.Common;
 using Safir.Messaging.Internal;
 
 namespace Safir.Messaging
@@ -39,7 +38,7 @@ namespace Safir.Messaging
             }
         }
 
-        public static IEnumerable<Result<IDisposable>> Subscribe<T>(
+        public static IEnumerable<IDisposable> Subscribe<T>(
             this IEventBus bus,
             IEnumerable<IEventHandler<T>> handlers)
             where T : IEvent
@@ -59,7 +58,7 @@ namespace Safir.Messaging
             return wrapped.Subscribe(bus, handler);
         }
 
-        internal static IEnumerable<Result<IDisposable>> Subscribe(
+        internal static IEnumerable<IDisposable> Subscribe(
             this IEventBus bus,
             Type eventType,
             IEnumerable<IEventHandler> handlers)

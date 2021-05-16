@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using LanguageExt;
-using LanguageExt.Common;
 
 namespace Safir.Messaging.Internal
 {
@@ -17,11 +13,6 @@ namespace Safir.Messaging.Internal
             }
 
             return bus.Subscribe(typed);
-        }
-        
-        public IEnumerable<Result<IDisposable>> Subscribe(IEventBus bus, IEnumerable<IEventHandler> handlers)
-        {
-            return handlers.Cast<IEventHandler<T>>().Select(x => Prelude.Try(() => bus.Subscribe(x))());
         }
     }
 }
