@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using LanguageExt;
 using LanguageExt.Common;
 using Safir.Messaging.Internal;
 
@@ -46,6 +45,18 @@ namespace Safir.Messaging
             where T : IEvent
         {
             return bus.Subscribe(typeof(T), handlers);
+        }
+
+        internal static IDisposable Subscribe(this IEventBus bus, Type eventType, IEventHandler handler)
+        {
+            if (!typeof(IEvent).IsAssignableFrom(eventType))
+            {
+                throw new InvalidOperationException("eventType is not assignable to IEvent");
+            }
+
+            var wrapperType = typeof(SubscribeHandlerWrapper<>).MakeGenericType(eventType);
+            var wrapped = (ISubscribeHandlerWrapper)Activator.CreateInstance(wrapperType);
+            return wrapped.Subscribe(bus, handler);
         }
 
         internal static IEnumerable<Result<IDisposable>> Subscribe(
