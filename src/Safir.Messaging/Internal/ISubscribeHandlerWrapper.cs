@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using LanguageExt.Common;
 
 namespace Safir.Messaging.Internal
 {
@@ -9,5 +7,7 @@ namespace Safir.Messaging.Internal
     public interface ISubscribeHandlerWrapper
     {
         IDisposable Subscribe(IEventBus bus, IEventHandler handler);
+
+        IDisposable SubscribeSafe(IEventBus bus, IEventHandler handler, Action<Exception> onError);
     }
 }
