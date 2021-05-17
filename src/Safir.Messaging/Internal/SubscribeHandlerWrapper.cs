@@ -10,14 +10,24 @@ namespace Safir.Messaging.Internal
             return SubscribeSafe(bus, handler, _ => { });
         }
 
+        public IDisposable SubscribeRetry(IEventBus bus, IEventHandler handler, Action<Exception> onError)
+        {
+            return bus.SubscribeRetry(ValidateHandler(handler), onError);
+        }
+
         public IDisposable SubscribeSafe(IEventBus bus, IEventHandler handler, Action<Exception> onError)
+        {
+            return bus.SubscribeSafe(ValidateHandler(handler), onError);
+        }
+
+        private static IEventHandler<T> ValidateHandler(IEventHandler handler)
         {
             if (handler is not IEventHandler<T> typed)
             {
                 throw new InvalidOperationException("Incorrect handler type");
             }
 
-            return bus.SubscribeSafe(typed, onError);
+            return typed;
         }
     }
 }

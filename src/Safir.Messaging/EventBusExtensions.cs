@@ -44,6 +44,24 @@ namespace Safir.Messaging
             return bus.Subscribe(typeof(T), handlers);
         }
 
+        public static IDisposable SubscribeRetry<T>(this IEventBus bus, IEventHandler<T> handler, Action<Exception> onError)
+            where T : IEvent
+        {
+            return bus.ObserveWith(handler).Retry().SubscribeSafe(onError);
+        }
+
+        public static IDisposable SubscribeSafe<T>(this IEventBus bus, IObserver<T> observer)
+            where T : IEvent
+        {
+            return bus.GetObservable<T>().SubscribeSafe(observer);
+        }
+
+        public static IDisposable SubscribeSafe<T>(this IEventBus bus, IEventHandler<T> handler, Action<Exception> onError)
+            where T : IEvent
+        {
+            return bus.ObserveWith(handler).SubscribeSafe(onError);
+        }
+
         internal static IDisposable Subscribe(this IEventBus bus, Type eventType, IEventHandler handler)
         {
             return SubscribeSafe(bus, eventType, handler, _ => { });
@@ -57,16 +75,36 @@ namespace Safir.Messaging
             return SubscribeSafe(bus, eventType, handlers, _ => { });
         }
 
-        public static IDisposable SubscribeSafe<T>(this IEventBus bus, IObserver<T> observer)
-            where T : IEvent
+        internal static IEnumerable<IDisposable> SubscribeRetry(
+            this IEventBus bus,
+            Type eventType,
+            IEnumerable<IEventHandler> handlers,
+            Action<Exception> onError)
         {
-            return bus.GetObservable<T>().SubscribeSafe(observer);
+            if (!typeof(IEvent).IsAssignableFrom(eventType))
+            {
+                throw new InvalidOperationException("eventType is not assignable to IEvent");
+            }
+
+            var wrapperType = typeof(SubscribeHandlerWrapper<>).MakeGenericType(eventType);
+            var wrapped = (ISubscribeHandlerWrapper)Activator.CreateInstance(wrapperType);
+            return wrapped.SubscribeRetry(bus, handlers, onError);
         }
 
-        public static IDisposable SubscribeSafe<T>(this IEventBus bus, IEventHandler<T> handler, Action<Exception> onError)
-            where T : IEvent
+        internal static IDisposable SubscribeRetry(
+            this IEventBus bus,
+            Type eventType,
+            IEventHandler handler,
+            Action<Exception> onError)
         {
-            return bus.ObserveWith(handler).SubscribeSafe(Observer.Create<T>(_ => { }, onError));
+            if (!typeof(IEvent).IsAssignableFrom(eventType))
+            {
+                throw new InvalidOperationException("eventType is not assignable to IEvent");
+            }
+
+            var wrapperType = typeof(SubscribeHandlerWrapper<>).MakeGenericType(eventType);
+            var wrapped = (ISubscribeHandlerWrapper)Activator.CreateInstance(wrapperType);
+            return wrapped.SubscribeRetry(bus, handler, onError);
         }
 
         internal static IDisposable SubscribeSafe(

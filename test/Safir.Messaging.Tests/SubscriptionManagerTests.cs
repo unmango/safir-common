@@ -98,7 +98,7 @@ namespace Safir.Messaging.Tests
             _eventBus.Verify(x => x.SubscribeAsync(It.IsAny<Action<MockEvent>>(), It.IsAny<CancellationToken>()));
             Assert.NotNull(callback);
             
-            Assert.Throws<Exception>(() => callback?.Invoke(message));
+            callback?.Invoke(message);
             callback?.Invoke(message);
             
             handler.Verify(x => x.HandleAsync(It.IsAny<MockEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));

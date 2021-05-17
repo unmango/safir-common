@@ -8,6 +8,8 @@ namespace Safir.Messaging.Internal
     {
         IDisposable Subscribe(IEventBus bus, IEventHandler handler);
 
+        IDisposable SubscribeRetry(IEventBus bus, IEventHandler handler, Action<Exception> onError);
+
         IDisposable SubscribeSafe(IEventBus bus, IEventHandler handler, Action<Exception> onError);
     }
 }
