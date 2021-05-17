@@ -20,6 +20,12 @@ namespace Safir.Messaging
             });
         }
 
+        public static IObservable<T> ObserveWith<T>(this IEventBus bus, IEventHandler<T> handler)
+            where T : IEvent
+        {
+            return bus.GetObservable<T>().ObserveWith(handler);
+        }
+
         public static IDisposable Subscribe<T>(this IEventBus bus, Action<T> callback)
             where T : IEvent
         {
@@ -29,13 +35,7 @@ namespace Safir.Messaging
         public static IDisposable Subscribe<T>(this IEventBus bus, IEventHandler<T> handler)
             where T : IEvent
         {
-            return bus.GetObservable<T>().SelectMany(HandleAsync).Subscribe();
-
-            async Task<Unit> HandleAsync(T message, CancellationToken cancellationToken)
-            {
-                await handler.HandleAsync(message, cancellationToken);
-                return Unit.Default;
-            }
+            return bus.ObserveWith(handler).Subscribe();
         }
 
         public static IEnumerable<IDisposable> Subscribe<T>(
