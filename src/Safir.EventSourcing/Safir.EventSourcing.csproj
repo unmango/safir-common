@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Product>Safir.EventSourcing</Product>
+    <Description>Safir event sourcing implementation.</Description>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Safir.EventSourcing.Abstractions\Safir.EventSourcing.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
