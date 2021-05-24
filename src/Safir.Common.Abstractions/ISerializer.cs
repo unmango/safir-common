@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace Safir.Messaging
+namespace Safir.Common
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public interface ISerializer

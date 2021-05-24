@@ -2,6 +2,7 @@ using System;
 using JetBrains.Annotations;
 using MessagePack;
 using MessagePack.Resolvers;
+using Safir.Common;
 
 namespace Safir.Messaging
 {
