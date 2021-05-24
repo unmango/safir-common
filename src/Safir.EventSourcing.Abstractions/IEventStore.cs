@@ -2,17 +2,22 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public interface IEventStore
     {
-        Task AddAsync(Event @event, CancellationToken cancellationToken = default);
+        Task AddAsync<T>(T @event, CancellationToken cancellationToken = default)
+            where T : IEvent;
 
-        Task<Event> GetAsync(long id, CancellationToken cancellationToken = default);
+        Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<Event> GetStreamAsync(
+        Task<T> GetAsync<T>(long id, CancellationToken cancellationToken = default)
+            where T : IEvent;
+
+        IAsyncEnumerable<IEvent> GetStreamAsync(
             long aggregateId,
             ulong startPosition = ulong.MinValue,
             ulong endPosition = ulong.MaxValue,
