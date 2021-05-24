@@ -14,8 +14,8 @@ namespace Safir.Messaging
 
         public static ISerializer Instance => _instance.Value;
 
-        public byte[] Serialize<T>(T value) => MessagePackSerializer.Serialize(value, _options);
+        public Span<byte> Serialize<T>(T value) => MessagePackSerializer.Serialize(value, _options);
 
-        public T Deserialize<T>(byte[] value) => MessagePackSerializer.Deserialize<T>(value, _options);
+        public T Deserialize<T>(Span<byte> value) => MessagePackSerializer.Deserialize<T>(value.ToArray(), _options);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 
 namespace Safir.Common
@@ -5,8 +6,8 @@ namespace Safir.Common
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public interface ISerializer
     {
-        byte[] Serialize<T>(T value);
+        Span<byte> Serialize<T>(T value);
 
-        T Deserialize<T>(byte[] value);
+        T Deserialize<T>(Span<byte> value);
     }
 }
