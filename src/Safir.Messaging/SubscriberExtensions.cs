@@ -63,12 +63,12 @@ namespace Safir.Messaging
 
         private static T Deserialize<T>(RedisValue value)
         {
-            return DefaultSerializer.Instance.Deserialize<T>(value);
+            return DefaultSerializer.Instance.Deserialize<T>((byte[])value);
         }
 
         private static RedisValue Serialize<T>(T message)
         {
-            return DefaultSerializer.Instance.Serialize(message);
+            return DefaultSerializer.Instance.Serialize(message).ToArray();
         }
     }
 }
