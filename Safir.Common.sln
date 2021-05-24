@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CC75D772-3E67-4095-9351-DCD6EEF144AD}"
+ProjectSection(SolutionItems) = preProject
+	src\Directory.Build.props = src\Directory.Build.props
+EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3915209A-D60D-48CA-BEBF-AF19F3F594ED}"
 EndProject
@@ -30,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.EventSourcing", "src\Safir.EventSourcing\Safir.EventSourcing.csproj", "{39FE1211-865F-49DF-8954-352DEFAC79B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.EventSourcing.Abstractions", "src\Safir.EventSourcing.Abstractions\Safir.EventSourcing.Abstractions.csproj", "{EC167E72-5BE2-43F9-9CF5-268EA75F0249}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.EventSourcing.EntityFrameworkCore", "src\Safir.EventSourcing.EntityFrameworkCore\Safir.EventSourcing.EntityFrameworkCore.csproj", "{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -188,6 +193,18 @@ Global
 		{EC167E72-5BE2-43F9-9CF5-268EA75F0249}.Release|x64.Build.0 = Release|Any CPU
 		{EC167E72-5BE2-43F9-9CF5-268EA75F0249}.Release|x86.ActiveCfg = Release|Any CPU
 		{EC167E72-5BE2-43F9-9CF5-268EA75F0249}.Release|x86.Build.0 = Release|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Debug|x64.Build.0 = Debug|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Debug|x86.Build.0 = Debug|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|x64.ActiveCfg = Release|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|x64.Build.0 = Release|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|x86.ActiveCfg = Release|Any CPU
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7D9BBDAA-9C15-43A3-BC29-398C5FAB527B} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
@@ -202,5 +219,6 @@ Global
 		{E43F39EB-BE9D-4E8B-9D8C-4DAD7DCA7D93} = {3915209A-D60D-48CA-BEBF-AF19F3F594ED}
 		{39FE1211-865F-49DF-8954-352DEFAC79B1} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
 		{EC167E72-5BE2-43F9-9CF5-268EA75F0249} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
+		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
 	EndGlobalSection
 EndGlobal
