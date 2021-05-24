@@ -10,7 +10,7 @@ namespace Safir.EventSourcing
         long AggregateId,
         ulong Position,
         DateTime Occurred,
-        Span<byte> Data,
+        ReadOnlyMemory<byte> Data,
         Metadata Metadata,
         int Version)
     {
