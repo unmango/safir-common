@@ -8,12 +8,14 @@ namespace Safir.EventSourcing
     public record Event(
         string Type,
         long AggregateId,
-        ulong Position,
-        DateTime Occurred,
         ReadOnlyMemory<byte> Data,
         Metadata Metadata,
         int Version)
     {
         public long Id { get; [UsedImplicitly] init; }
+        
+        public ulong Position { get; [UsedImplicitly] init; }
+        
+        public DateTime Occurred { get; [UsedImplicitly] init; }
     }
 }
