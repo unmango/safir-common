@@ -1,16 +1,19 @@
 using System;
+using JetBrains.Annotations;
 
 namespace Safir.EventSourcing
 {
     public sealed record Metadata(Guid CorrelationId, Guid CausationId);
-    
+
     public record Event(
-        long Id,
         string Type,
         long AggregateId,
         ulong Position,
         DateTime Occurred,
         Span<byte> Data,
         Metadata Metadata,
-        int Version);
+        int Version)
+    {
+        public long Id { get; [UsedImplicitly] init; }
+    }
 }
