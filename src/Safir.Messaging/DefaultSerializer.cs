@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,21 +18,32 @@ namespace Safir.Messaging
 
         public static ISerializer Instance => _instance.Value;
 
-        public T Deserialize<T>(ReadOnlySpan<byte> value) => MessagePackSerializer.Deserialize<T>(value.ToArray(), _options);
+        public T Deserialize<T>(ReadOnlyMemory<byte> value)
+        {
+            return MessagePackSerializer.Deserialize<T>(value.ToArray(), _options);
+        }
 
-        public ValueTask<T> DeserializeAsync<T>(ReadOnlySpan<byte> value, CancellationToken cancellationToken = default)
+        public ValueTask<T> DeserializeAsync<T>(ReadOnlyMemory<byte> value, CancellationToken cancellationToken = default)
         {
             using var stream = new MemoryStream(value.ToArray());
             return MessagePackSerializer.DeserializeAsync<T>(stream, _options, cancellationToken);
         }
 
-        public Span<byte> Serialize<T>(T value) => MessagePackSerializer.Serialize(value, _options);
-
-        public async ValueTask<Memory<byte>> SerializeAsync<T>(T value, CancellationToken cancellationToken = default)
+        public void Serialize<T>(IBufferWriter<byte> writer, T value)
         {
-            await using var stream = new MemoryStream();
-            await MessagePackSerializer.SerializeAsync(stream, value, _options, cancellationToken);
-            return stream.ToArray();
+            MessagePackSerializer.Serialize(writer, value, _options);
+        }
+
+        public void Serialize<T>(Stream stream, T value)
+        {
+            MessagePackSerializer.Serialize(stream, value, _options);
+        }
+
+        public ValueTask SerializeAsync<T>(IBufferWriter<byte> writer, T value, CancellationToken cancellationToken = default)
+        {
+            MessagePackSerializer.Serialize(writer, value, _options, cancellationToken);
+            
+            return new();
         }
     }
 }
