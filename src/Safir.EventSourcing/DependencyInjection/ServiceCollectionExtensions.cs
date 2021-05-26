@@ -8,7 +8,7 @@ namespace Safir.EventSourcing.DependencyInjection
     {
         public static IServiceCollection AddEventSourcing(this IServiceCollection services)
         {
-            services.AddSingleton<IEventTypeProvider, DefaultEventTypeProvider>();
+            services.AddSingleton<IEventMetadataProvider, DefaultEventMetadataProvider>();
             
             return services;
         }

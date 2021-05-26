@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,14 @@ namespace Safir.EventSourcing
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public interface IEventStore
     {
-        Task AddAsync<T>(T @event, CancellationToken cancellationToken = default)
+        Task AddAsync<T>(
+            long aggregateId,
+            T @event,
+            DateTime occurred,
+            Guid correlationId,
+            Guid causationId,
+            int version,
+            CancellationToken cancellationToken = default)
             where T : IEvent;
 
         Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default);

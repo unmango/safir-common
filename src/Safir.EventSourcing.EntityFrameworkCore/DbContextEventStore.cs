@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -14,44 +15,51 @@ namespace Safir.EventSourcing.EntityFrameworkCore
     {
         private readonly TContext _context;
         private readonly ISerializer _serializer;
-        private readonly IEventTypeProvider _eventTypeProvider;
+        private readonly IEventMetadataProvider _eventMetadataProvider;
 
-        public DbContextEventStore(TContext context, ISerializer serializer, IEventTypeProvider eventTypeProvider)
+        public DbContextEventStore(TContext context, ISerializer serializer, IEventMetadataProvider eventMetadataProvider)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-            _eventTypeProvider = eventTypeProvider ?? throw new ArgumentNullException(nameof(eventTypeProvider));
+            _eventMetadataProvider = eventMetadataProvider ?? throw new ArgumentNullException(nameof(eventMetadataProvider));
         }
 
-        public async Task AddAsync<T>(T @event, CancellationToken cancellationToken = default) where T : IEvent
+        public async Task AddAsync<T>(
+            long aggregateId,
+            T @event,
+            DateTime occurred,
+            Guid correlationId,
+            Guid causationId,
+            int version,
+            CancellationToken cancellationToken = default)
+            where T : IEvent
         {
             var writer = new ArrayBufferWriter<byte>();
             await _serializer.SerializeAsync(writer, @event, cancellationToken);
 
-            var type = _eventTypeProvider.GetType(@event);
-            
-            // TODO: How to get some of these values
+            var type = await _eventMetadataProvider.GetTypeDiscriminatorAsync(@event, version, cancellationToken);
+
             var entity = new Event(
                 type,
-                0,
+                aggregateId,
                 writer.WrittenMemory,
-                new Metadata(Guid.Empty, Guid.Empty),
-                69);
+                occurred,
+                new(correlationId, causationId),
+                version);
 
             await _context.AddAsync(entity, cancellationToken);
         }
 
         public async Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default)
         {
-            var @event = await _context.Set<Event>().FirstAsync(x => x.Id == id, cancellationToken);
-
-            // Use Type property to get type to deserialize as?
-            throw new NotImplementedException();
+            var @event = await _context.Set<Event>().AsQueryable().FirstAsync(x => x.Id == id, cancellationToken);
+            var type = await _eventMetadataProvider.GetTypeAsync(@event.Type, @event.Version, cancellationToken);
+            return await DeserializeAsync(type, @event.Data, cancellationToken);
         }
 
         public async Task<T> GetAsync<T>(long id, CancellationToken cancellationToken = default) where T : IEvent
         {
-            var @event = await _context.Set<Event>().FirstAsync(x => x.Id == id, cancellationToken);
+            var @event = await _context.Set<Event>().AsQueryable().FirstAsync(x => x.Id == id, cancellationToken);
             return await _serializer.DeserializeAsync<T>(@event.Data, cancellationToken);
         }
 
@@ -61,7 +69,32 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             ulong endPosition = ulong.MaxValue,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return _context.Set<Event>()
+                .AsAsyncEnumerable()
+                .Where(Matches)
+                .SelectAwaitWithCancellation(Deserialize);
+
+            bool Matches(Event @event) =>
+                @event.AggregateId == aggregateId &&
+                @event.Position >= startPosition &&
+                @event.Position <= endPosition;
+
+            async ValueTask<IEvent> Deserialize(Event @event, CancellationToken token)
+            {
+                var type = await _eventMetadataProvider.GetTypeAsync(@event.Type, @event.Version, token);
+                return await DeserializeAsync(type, @event.Data, token);
+            }
+        }
+
+        private async ValueTask<IEvent> DeserializeAsync(
+            Type type,
+            ReadOnlyMemory<byte> data,
+            CancellationToken cancellationToken)
+        {
+            if (!typeof(IEvent).IsAssignableFrom(type))
+                throw new InvalidOperationException($"Resolved type is not assignable to {nameof(IEvent)}");
+
+            return (IEvent)await _serializer.DeserializeAsync(type, data, cancellationToken);
         }
     }
 }
