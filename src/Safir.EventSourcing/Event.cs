@@ -9,13 +9,12 @@ namespace Safir.EventSourcing
         string Type,
         long AggregateId,
         ReadOnlyMemory<byte> Data,
+        DateTime Occurred,
         Metadata Metadata,
         int Version)
     {
         public long Id { get; [UsedImplicitly] init; }
         
         public ulong Position { get; [UsedImplicitly] init; }
-        
-        public DateTime Occurred { get; [UsedImplicitly] init; }
     }
 }
