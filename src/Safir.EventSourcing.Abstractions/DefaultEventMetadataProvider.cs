@@ -9,12 +9,17 @@ namespace Safir.EventSourcing
     [UsedImplicitly]
     public sealed class DefaultEventMetadataProvider : IEventMetadataProvider
     {
-        public string GetTypeDiscriminator<T>(T @event, int version) where T : IEvent => typeof(T).AssemblyQualifiedName;
+        public string GetTypeDiscriminator<T>(T @event, int version)
+            where T : IEvent
+        {
+            return typeof(T).AssemblyQualifiedName;
+        }
 
         public ValueTask<string> GetTypeDiscriminatorAsync<T>(
             T @event,
             int version,
-            CancellationToken cancellationToken = default) where T : IEvent
+            CancellationToken cancellationToken = default)
+            where T : IEvent
         {
             return new(GetTypeDiscriminator(@event, version));
         }

@@ -48,6 +48,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
                 version);
 
             await _context.AddAsync(entity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default)
