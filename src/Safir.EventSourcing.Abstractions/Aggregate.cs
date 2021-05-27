@@ -10,7 +10,7 @@ namespace Safir.EventSourcing
     {
         public long Id { get; protected set; }
         
-        public int Version { get; protected set; }
+        public ulong Version { get; protected set; }
         
         public IEnumerable<IEvent> Events { get; protected set; } = Enumerable.Empty<IEvent>();
 

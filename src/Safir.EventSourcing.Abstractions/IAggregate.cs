@@ -9,7 +9,7 @@ namespace Safir.EventSourcing
     {
         long Id { get; }
         
-        int Version { get; }
+        ulong Version { get; }
         
         IEnumerable<IEvent> Events { get; }
 
