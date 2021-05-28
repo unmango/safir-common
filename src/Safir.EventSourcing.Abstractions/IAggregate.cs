@@ -4,7 +4,7 @@ using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [PublicAPI]
     public interface IAggregate
     {
         long Id { get; }

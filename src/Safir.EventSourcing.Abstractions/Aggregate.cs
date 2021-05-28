@@ -5,7 +5,7 @@ using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [PublicAPI]
     public abstract record Aggregate : IAggregate
     {
         public long Id { get; protected set; }

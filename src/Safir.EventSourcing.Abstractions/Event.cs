@@ -3,8 +3,10 @@ using JetBrains.Annotations;
 
 namespace Safir.EventSourcing
 {
+    [PublicAPI]
     public sealed record Metadata(Guid CorrelationId, Guid CausationId);
 
+    [PublicAPI]
     public record Event(
         string Type,
         long AggregateId,
@@ -13,8 +15,8 @@ namespace Safir.EventSourcing
         Metadata Metadata,
         int Version)
     {
-        public long Id { get; [UsedImplicitly] init; }
+        public long Id { get; init; }
         
-        public ulong Position { get; [UsedImplicitly] init; }
+        public int Position { get; init; }
     }
 }

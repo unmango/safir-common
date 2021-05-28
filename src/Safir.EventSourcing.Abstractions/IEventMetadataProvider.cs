@@ -6,7 +6,7 @@ using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [PublicAPI]
     public interface IEventMetadataProvider
     {
         string GetTypeDiscriminator<T>(T @event, int version) where T : IEvent;

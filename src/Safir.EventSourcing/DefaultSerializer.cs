@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Safir.Common;
+using Safir.Common.Buffers;
 
 namespace Safir.EventSourcing
 {
@@ -12,6 +13,9 @@ namespace Safir.EventSourcing
     {
         private static readonly JsonSerializerOptions _options = new();
         private static readonly JsonWriterOptions _writerOptions = new();
+        private static readonly Lazy<DefaultSerializer> _instance = new();
+
+        public static ISerializer Instance => _instance.Value;
 
         public T Deserialize<T>(ReadOnlyMemory<byte> value)
         {
@@ -45,13 +49,19 @@ namespace Safir.EventSourcing
             JsonSerializer.Serialize(writer, value, _options);
         }
 
-        public async ValueTask SerializeAsync<T>(
+        public ValueTask SerializeAsync<T>(
             IBufferWriter<byte> writer,
             T value,
             CancellationToken cancellationToken = default)
         {
             using var stream = writer.AsStream();
-            await JsonSerializer.SerializeAsync(stream, _options, cancellationToken);
+            var task = JsonSerializer.SerializeAsync(
+                stream,
+                value,
+                _options,
+                cancellationToken);
+            
+            return new(task);
         }
     }
 }

@@ -1,46 +1,45 @@
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
-using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [PublicAPI]
     public static class EventStoreExtensions
     {
-        public static IAsyncEnumerable<IEvent> GetStreamAsync(
+        public static IAsyncEnumerable<Event> StreamAsync(
             this IEventStore store,
             long aggregateId,
             CancellationToken cancellationToken)
         {
-            return store.GetStreamAsync(aggregateId, cancellationToken: cancellationToken);
+            return store.StreamAsync(aggregateId, cancellationToken: cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> GetStreamAsync(
+        public static IAsyncEnumerable<Event> StreamAsync(
             this IEventStore store,
             long aggregateId,
-            ulong startPosition,
+            int startPosition,
             CancellationToken cancellationToken = default)
         {
-            return store.GetStreamFromAsync(aggregateId, startPosition, cancellationToken);
+            return store.StreamFromAsync(aggregateId, startPosition, cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> GetStreamFromAsync(
+        public static IAsyncEnumerable<Event> StreamFromAsync(
             this IEventStore store,
             long aggregateId,
-            ulong startPosition,
+            int startPosition,
             CancellationToken cancellationToken = default)
         {
-            return store.GetStreamAsync(aggregateId, startPosition, cancellationToken: cancellationToken);
+            return store.StreamAsync(aggregateId, startPosition, cancellationToken: cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> GetStreamUntilAsync(
+        public static IAsyncEnumerable<Event> StreamUntilAsync(
             this IEventStore store,
             long aggregateId,
-            ulong endPosition,
+            int endPosition,
             CancellationToken cancellationToken = default)
         {
-            return store.GetStreamAsync(aggregateId, endPosition: endPosition, cancellationToken: cancellationToken);
+            return store.StreamAsync(aggregateId, endPosition: endPosition, cancellationToken: cancellationToken);
         }
     }
 }

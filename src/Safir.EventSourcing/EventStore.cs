@@ -1,60 +1,35 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Safir.Common;
-using Safir.Messaging;
+using JetBrains.Annotations;
 
 namespace Safir.EventSourcing
 {
+    [PublicAPI]
     public abstract class EventStore : IEventStore
     {
-        private readonly ISerializer _serializer;
-        private readonly IEventMetadataProvider _metadataProvider;
+        public abstract Task AddAsync(Event @event, CancellationToken cancellationToken = default);
 
-        protected EventStore()
+        public virtual Task AddAsync(IEnumerable<Event> events, CancellationToken cancellationToken = default)
         {
+            return Task.WhenAll(events.Select(x => AddAsync(x, cancellationToken)));
         }
-        
-        protected EventStore(ISerializer serializer, IEventMetadataProvider metadataProvider)
-        {
-            _serializer = serializer;
-            _metadataProvider = metadataProvider;
-        }
-        
-        public Task AddAsync<T>(
+
+        public abstract Task<Event> GetAsync(long id, CancellationToken cancellationToken = default);
+
+        public virtual IAsyncEnumerable<Event> StreamBackwardsAsync(
             long aggregateId,
-            T @event,
-            DateTime occurred,
-            Guid correlationId,
-            Guid causationId,
-            int version,
-            CancellationToken cancellationToken = default) where T : IEvent
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<T> GetAsync<T>(long id, CancellationToken cancellationToken = default) where T : IEvent
-        {
-            throw new NotImplementedException();
-        }
-
-        public IAsyncEnumerable<IEvent> GetStreamAsync(
-            long aggregateId,
-            ulong startPosition = ulong.MinValue,
-            ulong endPosition = ulong.MaxValue,
+            int count,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return this.StreamAsync(aggregateId, count, cancellationToken).Reverse().Take(count);
         }
 
-        protected abstract ValueTask AddAsync(Event @event, CancellationToken cancellationToken);
-
-        protected abstract IAsyncEnumerable<Event> GetStreamAsync(CancellationToken cancellationToken);
+        public abstract IAsyncEnumerable<Event> StreamAsync(
+            long aggregateId,
+            int startPosition = int.MinValue,
+            int endPosition = int.MaxValue,
+            CancellationToken cancellationToken = default);
     }
 }

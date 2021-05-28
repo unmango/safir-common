@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Product>Safir.Messaging.MediatR</Product>
     <Description>MediatR helpers for Safir.Messaging.</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

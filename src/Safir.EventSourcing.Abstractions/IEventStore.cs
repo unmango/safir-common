@@ -1,34 +1,28 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [PublicAPI]
     public interface IEventStore
     {
-        Task AddAsync<T>(
+        Task AddAsync(Event @event, CancellationToken cancellationToken = default);
+
+        Task AddAsync(IEnumerable<Event> events, CancellationToken cancellationToken = default);
+
+        Task<Event> GetAsync(long id, CancellationToken cancellationToken = default);
+
+        IAsyncEnumerable<Event> StreamBackwardsAsync(
             long aggregateId,
-            T @event,
-            DateTime occurred,
-            Guid correlationId,
-            Guid causationId,
-            int version,
-            CancellationToken cancellationToken = default)
-            where T : IEvent;
+            int count,
+            CancellationToken cancellationToken = default);
 
-        Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default);
-
-        Task<T> GetAsync<T>(long id, CancellationToken cancellationToken = default)
-            where T : IEvent;
-
-        IAsyncEnumerable<IEvent> GetStreamAsync(
+        IAsyncEnumerable<Event> StreamAsync(
             long aggregateId,
-            ulong startPosition = ulong.MinValue,
-            ulong endPosition = ulong.MaxValue,
+            int startPosition = int.MinValue,
+            int endPosition = int.MaxValue,
             CancellationToken cancellationToken = default);
     }
 }
