@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Safir.Common;
 
 namespace Safir.EventSourcing.DependencyInjection
 {
@@ -8,6 +9,7 @@ namespace Safir.EventSourcing.DependencyInjection
     {
         public static IServiceCollection AddEventSourcing(this IServiceCollection services)
         {
+            services.AddTransient<ISerializer, DefaultSerializer>();
             services.AddSingleton<IEventMetadataProvider, DefaultEventMetadataProvider>();
             
             return services;

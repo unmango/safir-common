@@ -4,32 +4,47 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Safir.EventSourcing.EntityFrameworkCore
 {
-    public class DbContextEventStore<TContext> : IEventStore
-        where TContext : DbContext
+    public class DbContextEventStore<T> : IEventStore
+        where T : DbContext
     {
-        private readonly TContext _context;
+        private readonly T _context;
+        private readonly ILogger<DbContextEventStore<T>> _logger;
 
-        public DbContextEventStore(TContext context)
+        public DbContextEventStore(T context, ILogger<DbContextEventStore<T>> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task AddAsync(Event @event, CancellationToken cancellationToken = default)
         {
+            _logger.LogTrace("Adding event {Event}", @event);
             await _context.AddAsync(@event, cancellationToken);
+            _logger.LogTrace("Added event {Event}", @event);
+            
+            _logger.LogTrace("Saving changes asynchronously");
             await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogTrace("Saved changes asynchronously");
         }
 
-        public Task AddAsync(IEnumerable<Event> events, CancellationToken cancellationToken = default)
+        public async Task AddAsync(IEnumerable<Event> events, CancellationToken cancellationToken = default)
         {
-            return _context.AddRangeAsync(events, cancellationToken);
+            _logger.LogTrace("Adding events {Events}", events);
+            await _context.AddRangeAsync(events, cancellationToken);
+            _logger.LogTrace("Added events {Events}", events);
+            
+            _logger.LogTrace("Saving changes asynchronously");
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogTrace("Saved changes asynchronously");
         }
 
         public Task<Event> GetAsync(long id, CancellationToken cancellationToken = default)
         {
+            _logger.LogTrace("Getting single event with id {Id}", id);
             return _context.Set<Event>().AsQueryable().FirstAsync(x => x.Id == id, cancellationToken);
         }
 
@@ -38,6 +53,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             int count,
             CancellationToken cancellationToken = default)
         {
+            _logger.LogTrace("Streaming {Count} events backwards with aggregate Id {Id}", count, aggregateId);
             return _context.Set<Event>().AsAsyncEnumerable().Reverse().Take(count);
         }
 
@@ -47,7 +63,13 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             int endPosition = int.MaxValue,
             CancellationToken cancellationToken = default)
         {
-            return _context.Set<Event>().AsQueryable().Where(Matches).ToAsyncEnumerable();
+            _logger.LogTrace(
+                "Streaming events with aggregateId {AggregateId} from start {Start} till end {End}",
+                aggregateId,
+                startPosition,
+                endPosition);
+            
+            return _context.Set<Event>().AsAsyncEnumerable().Where(Matches);
 
             bool Matches(Event @event) =>
                 @event.AggregateId == aggregateId &&
