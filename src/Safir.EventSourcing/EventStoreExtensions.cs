@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace Safir.EventSourcing
@@ -7,6 +9,48 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public static class EventStoreExtensions
     {
+        public static Task AddAsync(
+            this IEventStore store,
+            long aggregateId,
+            string type,
+            ReadOnlyMemory<byte> data,
+            DateTime occurred,
+            Guid correlationId,
+            Guid causationId,
+            int version,
+            CancellationToken cancellationToken = default)
+        {
+            return store.AddAsync(
+                aggregateId,
+                type,
+                data,
+                occurred,
+                new(correlationId, causationId),
+                version,
+                cancellationToken);
+        }
+        
+        public static Task AddAsync(
+            this IEventStore store,
+            long aggregateId,
+            string type,
+            ReadOnlyMemory<byte> data,
+            DateTime occurred,
+            Metadata metadata,
+            int version,
+            CancellationToken cancellationToken = default)
+        {
+            var @event = new Event(
+                aggregateId,
+                type,
+                data,
+                occurred,
+                metadata,
+                version);
+
+            return store.AddAsync(@event, cancellationToken);
+        }
+        
         public static IAsyncEnumerable<Event> StreamAsync(
             this IEventStore store,
             long aggregateId,

@@ -8,8 +8,8 @@ namespace Safir.EventSourcing
 
     [PublicAPI]
     public record Event(
-        string Type,
         long AggregateId,
+        string Type,
         ReadOnlyMemory<byte> Data,
         DateTime Occurred,
         Metadata Metadata,
