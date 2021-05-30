@@ -27,7 +27,7 @@ namespace Safir.EventSourcing
 
         public virtual Task AddAsync(IEnumerable<Event> events, CancellationToken cancellationToken = default)
         {
-            return Task.WhenAll(events.Select(x => AddAsync(x, cancellationToken)));
+            return Task.WhenAll(events.Select(x => AddAsync((Event)x, cancellationToken)));
         }
 
         public abstract Task<Event> GetAsync(long id, CancellationToken cancellationToken = default);

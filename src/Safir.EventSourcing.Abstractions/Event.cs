@@ -4,7 +4,16 @@ using JetBrains.Annotations;
 namespace Safir.EventSourcing
 {
     [PublicAPI]
-    public sealed record Metadata(Guid CorrelationId, Guid CausationId);
+    public sealed record Metadata(Guid CorrelationId, Guid CausationId)
+    {
+        public Metadata() : this(Guid.Empty, Guid.Empty)
+        {
+        }
+
+        public Metadata(Guid correlationId) : this(correlationId, Guid.Empty)
+        {
+        }
+    }
 
     [PublicAPI]
     public record Event(

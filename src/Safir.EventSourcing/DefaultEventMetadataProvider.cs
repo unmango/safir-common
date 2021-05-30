@@ -6,7 +6,6 @@ using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    [UsedImplicitly]
     public sealed class DefaultEventMetadataProvider : IEventMetadataProvider
     {
         private static readonly Lazy<DefaultEventMetadataProvider> _instance = new();

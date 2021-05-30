@@ -14,15 +14,15 @@ namespace Safir.EventSourcing
 
         Task<Event> GetAsync(long id, CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<Event> StreamBackwardsAsync(
-            long aggregateId,
-            int? count = null,
-            CancellationToken cancellationToken = default);
-
         IAsyncEnumerable<Event> StreamAsync(
             long aggregateId,
             int startPosition = int.MinValue,
             int endPosition = int.MaxValue,
+            CancellationToken cancellationToken = default);
+
+        IAsyncEnumerable<Event> StreamBackwardsAsync(
+            long aggregateId,
+            int? count = null,
             CancellationToken cancellationToken = default);
     }
 }

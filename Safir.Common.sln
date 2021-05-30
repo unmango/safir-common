@@ -9,6 +9,9 @@ ProjectSection(SolutionItems) = preProject
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3915209A-D60D-48CA-BEBF-AF19F3F594ED}"
+ProjectSection(SolutionItems) = preProject
+	test\Directory.Build.props = test\Directory.Build.props
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.Common", "src\Safir.Common\Safir.Common.csproj", "{7D9BBDAA-9C15-43A3-BC29-398C5FAB527B}"
 EndProject
@@ -35,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.EventSourcing.Abstractions", "src\Safir.EventSourcing.Abstractions\Safir.EventSourcing.Abstractions.csproj", "{EC167E72-5BE2-43F9-9CF5-268EA75F0249}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.EventSourcing.EntityFrameworkCore", "src\Safir.EventSourcing.EntityFrameworkCore\Safir.EventSourcing.EntityFrameworkCore.csproj", "{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.EventSourcing.Tests", "test\Safir.EventSourcing.Tests\Safir.EventSourcing.Tests.csproj", "{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -205,6 +210,18 @@ Global
 		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|x64.Build.0 = Release|Any CPU
 		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|x86.ActiveCfg = Release|Any CPU
 		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE}.Release|x86.Build.0 = Release|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Debug|x64.Build.0 = Debug|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Debug|x86.Build.0 = Debug|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Release|x64.ActiveCfg = Release|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Release|x64.Build.0 = Release|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Release|x86.ActiveCfg = Release|Any CPU
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7D9BBDAA-9C15-43A3-BC29-398C5FAB527B} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
@@ -220,5 +237,6 @@ Global
 		{39FE1211-865F-49DF-8954-352DEFAC79B1} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
 		{EC167E72-5BE2-43F9-9CF5-268EA75F0249} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
 		{C6EC91DB-91E5-4B93-BC28-7145B5A3FADE} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
+		{72C35D91-4AE8-4A06-8FAF-F621A943D4FA} = {3915209A-D60D-48CA-BEBF-AF19F3F594ED}
 	EndGlobalSection
 EndGlobal

@@ -63,9 +63,17 @@ namespace Safir.EventSourcing
             this IEventStore store,
             long aggregateId,
             int startPosition,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             return store.StreamFromAsync(aggregateId, startPosition, cancellationToken);
+        }
+
+        public static IAsyncEnumerable<Event> StreamBackwardsAsync(
+            this IEventStore store,
+            long aggregateId,
+            CancellationToken cancellationToken)
+        {
+            return store.StreamBackwardsAsync(aggregateId, null, cancellationToken);
         }
 
         public static IAsyncEnumerable<Event> StreamFromAsync(
