@@ -16,7 +16,7 @@ namespace Safir.EventSourcing
 
         IAsyncEnumerable<Event> StreamBackwardsAsync(
             long aggregateId,
-            int count,
+            int? count = null,
             CancellationToken cancellationToken = default);
 
         IAsyncEnumerable<Event> StreamAsync(
