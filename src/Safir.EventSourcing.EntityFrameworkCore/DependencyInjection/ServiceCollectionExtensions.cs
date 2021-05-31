@@ -26,7 +26,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.DependencyInjection
             where T : DbContext
         {
             services.AddEventSourcing();
-            services.AddScoped<IEventStore, DbContextStore<T>>();
+            services.AddScoped<IEventStore, DbContextEventStore<T>>();
 
             return services;
         }

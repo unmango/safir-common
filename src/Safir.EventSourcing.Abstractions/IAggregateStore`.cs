@@ -10,10 +10,8 @@ namespace Safir.EventSourcing
     {
         Task StoreAsync(T aggregate, CancellationToken cancellationToken = default);
 
-        Task SnapshotAsync(T aggregate, CancellationToken cancellationToken = default);
+        ValueTask<T> GetAsync(long id, CancellationToken cancellationToken = default);
 
-        Task<T> GetAsync(long id, CancellationToken cancellationToken = default);
-
-        Task<T> GetAsync(long id, int version, CancellationToken cancellationToken = default);
+        ValueTask<T> GetAsync(long id, int version, CancellationToken cancellationToken = default);
     }
 }
