@@ -9,11 +9,12 @@ namespace Safir.EventSourcing
     {
         long Id { get; }
         
-        ulong Version { get; }
+        int Version { get; }
         
         IEnumerable<IEvent> Events { get; }
 
-        void Apply<T>(T @event)
-            where T : IEvent;
+        void Apply(object @event);
+
+        IEnumerable<IEvent> DequeueAllEvents();
     }
 }

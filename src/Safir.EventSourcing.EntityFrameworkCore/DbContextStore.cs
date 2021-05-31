@@ -10,13 +10,13 @@ using Microsoft.Extensions.Logging;
 namespace Safir.EventSourcing.EntityFrameworkCore
 {
     [PublicAPI]
-    public class DbContextEventStore<T> : IEventStore
-        where T : DbContext
+    public class DbContextStore<TContext> : IEventStore, IAggregateStore
+        where TContext : DbContext
     {
-        private readonly T _context;
-        private readonly ILogger<DbContextEventStore<T>> _logger;
+        private readonly TContext _context;
+        private readonly ILogger<DbContextStore<TContext>> _logger;
 
-        public DbContextEventStore(T context, ILogger<DbContextEventStore<T>> logger)
+        public DbContextStore(TContext context, ILogger<DbContextStore<TContext>> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -82,6 +82,26 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         protected virtual IQueryable<Event> GetEventSet()
         {
             return _context.Set<Event>().AsNoTracking();
+        }
+
+        public async Task StoreAsync<T>(T aggregate, CancellationToken cancellationToken = default) where T : IAggregate
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SnapshotAsync<T>(T aggregate, CancellationToken cancellationToken = default) where T : IAggregate
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> GetAsync<T>(long id, CancellationToken cancellationToken = default) where T : IAggregate
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> GetAsync<T>(long id, int version, CancellationToken cancellationToken = default) where T : IAggregate
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using Safir.Messaging;
 
@@ -8,12 +8,25 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public abstract record Aggregate : IAggregate
     {
-        public long Id { get; protected set; }
+        [NonSerialized]
+        private readonly Queue<IEvent> _events = new();
         
-        public ulong Version { get; protected set; }
+        public long Id { get; protected init; }
         
-        public IEnumerable<IEvent> Events { get; protected set; } = Enumerable.Empty<IEvent>();
+        public int Version { get; protected init; }
 
-        public virtual void Apply<T>(T @event) where T : IEvent { }
+        public IEnumerable<IEvent> Events => _events;
+
+        public virtual void Apply(object @event) { }
+
+        public IEnumerable<IEvent> DequeueAllEvents()
+        {
+            while (_events.Count > 0)
+                yield return _events.Dequeue();
+        }
+
+        protected void ClearEvents() => _events.Clear();
+
+        protected void Enqueue(IEvent @event) => _events.Enqueue(@event);
     }
 }
