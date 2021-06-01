@@ -3,68 +3,53 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Safir.Common;
-using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    public class DefaultAggregateStore<TAggregate> : IAggregateStore<TAggregate>, IAggregateStore
-        where TAggregate : IAggregate
+    public class DefaultAggregateStore : IAggregateStore
     {
         private readonly IEventStore _store;
-        private readonly ISerializer _serializer;
-        private readonly ILogger<DefaultAggregateStore<TAggregate>> _logger;
+        private readonly IEventSerializer _serializer;
+        private readonly ILogger<DefaultAggregateStore> _logger;
 
         public DefaultAggregateStore(
             IEventStore store,
-            ISerializer serializer,
-            ILogger<DefaultAggregateStore<TAggregate>> logger)
+            IEventSerializer serializer,
+            ILogger<DefaultAggregateStore> logger)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public Task StoreAsync(TAggregate aggregate, CancellationToken cancellationToken = default)
-        {
-            return StoreAsync<TAggregate>(aggregate, cancellationToken);
-        }
-
         public async Task StoreAsync<T>(T aggregate, CancellationToken cancellationToken = default)
-            where T : IAggregate
+            where T : IAggregate, new()
         {
-            var tasks = aggregate.DequeueAllEvents().Select(e => SerializeAsync(e, cancellationToken));
+            _logger.LogTrace("Dequeuing and serializing events");
+            var events = aggregate.DequeueAllEvents()
+                .Select(e => _serializer.SerializeAsync(aggregate.Id, e, cancellationToken))
+                .Select(x => x.AsTask());
             
-            var events = await Task.WhenAll(tasks);
-            await _store.AddAsync(events, cancellationToken);
-        }
-
-        public ValueTask<TAggregate> GetAsync(long id, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
+            _logger.LogTrace("Adding events to event store");
+            await _store.AddAsync(await Task.WhenAll(events), cancellationToken);
         }
 
         public ValueTask<T> GetAsync<T>(long id, CancellationToken cancellationToken = default)
-            where T : IAggregate
+            where T : IAggregate, new()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public ValueTask<TAggregate> GetAsync(long id, int version, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
+            // TODO: This cancellation token situation...
+            return _store.StreamAsync(id, cancellationToken)
+                .DeserializeAsync(_serializer, cancellationToken)
+                .AggregateAsync<T>(cancellationToken);
         }
 
         public ValueTask<T> GetAsync<T>(long id, int version, CancellationToken cancellationToken = default)
-            where T : IAggregate
+            where T : IAggregate, new()
         {
-            throw new System.NotImplementedException();
-        }
-
-        private async Task<Event> SerializeAsync<T>(T @event, CancellationToken cancellationToken)
-            where T : IEvent
-        {
-            var data = await _serializer.SerializeAsMemoryAsync(@event, cancellationToken);
+            // TODO: This cancellation token situation...
+            return _store.StreamAsync(id, version, cancellationToken)
+                .DeserializeAsync(_serializer, cancellationToken)
+                .AggregateAsync<T>(cancellationToken);
         }
     }
 }

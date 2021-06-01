@@ -66,6 +66,11 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             int endPosition = int.MaxValue,
             CancellationToken cancellationToken = default)
         {
+            if (startPosition > endPosition)
+            {
+                throw new InvalidOperationException("Start position can't be after the end position");
+            }
+            
             _logger.LogTrace(
                 "Streaming events with aggregateId {AggregateId} from start {Start} till end {End}",
                 aggregateId,

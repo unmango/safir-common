@@ -4,7 +4,7 @@ using Safir.Common;
 
 namespace Safir.EventSourcing.DependencyInjection
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [PublicAPI]
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddEventSourcing(this IServiceCollection services)
@@ -12,7 +12,10 @@ namespace Safir.EventSourcing.DependencyInjection
             services.AddLogging();
             
             services.AddTransient<ISerializer, DefaultSerializer>();
-            services.AddSingleton<IEventMetadataProvider, DefaultEventMetadataProvider>();
+            services.AddTransient<IEventSerializer, DefaultEventSerializer>();
+            services.AddTransient<IEventMetadataProvider, DefaultEventMetadataProvider>();
+            services.AddTransient<IAggregateStore, DefaultAggregateStore>();
+            services.AddTransient(typeof(IAggregateStore<>), typeof(DefaultAggregateStore<>));
             
             return services;
         }

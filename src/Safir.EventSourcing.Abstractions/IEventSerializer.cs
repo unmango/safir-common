@@ -6,7 +6,7 @@ namespace Safir.EventSourcing
 {
     public interface IEventSerializer
     {
-        ValueTask<Event> SerializeAsync<T>(T @event, CancellationToken cancellationToken = default)
+        ValueTask<Event> SerializeAsync<T>(long aggregateId, T @event, CancellationToken cancellationToken = default)
             where T : IEvent;
 
         ValueTask<IEvent> DeserializeAsync(Event @event, CancellationToken cancellationToken = default);
