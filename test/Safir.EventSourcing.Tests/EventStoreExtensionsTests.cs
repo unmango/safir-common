@@ -87,7 +87,7 @@ namespace Safir.EventSourcing.Tests
 
             _store.Verify(x => x.StreamAsync(
                 aggregateId,
-                int.MinValue,
+                0,
                 int.MaxValue,
                 default));
         }
@@ -142,7 +142,7 @@ namespace Safir.EventSourcing.Tests
 
             _store.Verify(x => x.StreamAsync(
                 aggregateId,
-                int.MinValue,
+                0,
                 endPosition,
                 default));
         }
