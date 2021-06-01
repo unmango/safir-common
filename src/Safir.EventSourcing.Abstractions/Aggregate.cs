@@ -19,7 +19,7 @@ namespace Safir.EventSourcing
 
         public virtual void Apply(IEvent @event) { }
 
-        public IEnumerable<IEvent> DequeueAllEvents()
+        public IEnumerable<IEvent> DequeueEvents()
         {
             while (_events.Count > 0)
                 yield return _events.Dequeue();

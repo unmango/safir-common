@@ -26,7 +26,7 @@ namespace Safir.EventSourcing
             where T : IAggregate
         {
             _logger.LogTrace("Dequeuing and serializing events");
-            var events = aggregate.DequeueAllEvents()
+            var events = aggregate.DequeueEvents()
                 .Select(e => _serializer.SerializeAsync(aggregate.Id, e, cancellationToken))
                 .Select(x => x.AsTask())
                 .ToList();
