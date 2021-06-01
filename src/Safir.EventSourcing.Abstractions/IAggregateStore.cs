@@ -8,7 +8,7 @@ namespace Safir.EventSourcing
     public interface IAggregateStore
     {
         Task StoreAsync<T>(T aggregate, CancellationToken cancellationToken = default)
-            where T : IAggregate, new();
+            where T : IAggregate;
 
         ValueTask<T> GetAsync<T>(long id, CancellationToken cancellationToken = default)
             where T : IAggregate, new();

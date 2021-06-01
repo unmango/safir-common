@@ -16,7 +16,7 @@ namespace Safir.EventSourcing
 
         IAsyncEnumerable<Event> StreamAsync(
             long aggregateId,
-            int startPosition = int.MinValue,
+            int startPosition = 0,
             int endPosition = int.MaxValue,
             CancellationToken cancellationToken = default);
 

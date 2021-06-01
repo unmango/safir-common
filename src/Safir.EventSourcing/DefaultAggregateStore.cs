@@ -23,12 +23,15 @@ namespace Safir.EventSourcing
         }
 
         public async Task StoreAsync<T>(T aggregate, CancellationToken cancellationToken = default)
-            where T : IAggregate, new()
+            where T : IAggregate
         {
             _logger.LogTrace("Dequeuing and serializing events");
             var events = aggregate.DequeueAllEvents()
                 .Select(e => _serializer.SerializeAsync(aggregate.Id, e, cancellationToken))
-                .Select(x => x.AsTask());
+                .Select(x => x.AsTask())
+                .ToList();
+            
+            if (events.Count <= 0) return;
             
             _logger.LogTrace("Adding events to event store");
             await _store.AddAsync(await Task.WhenAll(events), cancellationToken);
