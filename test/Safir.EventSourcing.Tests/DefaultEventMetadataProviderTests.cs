@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Moq.AutoMock;
 using Safir.Messaging;
@@ -71,6 +72,11 @@ namespace Safir.EventSourcing.Tests
             Assert.Equal(typeof(MockEvent), result);
         }
 
-        private record MockEvent : IEvent;
+        // ReSharper disable once CA1067
+        private record MockEvent : IEvent
+        {
+            // ReSharper disable once UnassignedGetOnlyAutoProperty
+            public DateTime Occurred { get; }
+        }
     }
 }
