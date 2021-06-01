@@ -17,7 +17,7 @@ namespace Safir.EventSourcing
 
         public IEnumerable<IEvent> Events => _events;
 
-        public virtual void Apply(object @event) { }
+        public virtual void Apply(IEvent @event) { }
 
         public IEnumerable<IEvent> DequeueAllEvents()
         {

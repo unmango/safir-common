@@ -13,7 +13,7 @@ namespace Safir.EventSourcing
         
         IEnumerable<IEvent> Events { get; }
 
-        void Apply(object @event);
+        void Apply(IEvent @event);
 
         IEnumerable<IEvent> DequeueAllEvents();
     }
