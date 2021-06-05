@@ -29,7 +29,7 @@ namespace Safir.EventSourcing
             nameof(Event),
             ReadOnlyMemory<byte>.Empty,
             default,
-            new(),
+            new Metadata(),
             default);
     }
 }
