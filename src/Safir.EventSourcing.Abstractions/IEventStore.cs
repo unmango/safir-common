@@ -9,9 +9,9 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public interface IEventStore
     {
-        Task AddAsync(IEvent @event, CancellationToken cancellationToken = default);
+        Task AddAsync(long aggregateId, IEvent @event, CancellationToken cancellationToken = default);
 
-        Task AddAsync(IEnumerable<IEvent> events, CancellationToken cancellationToken = default);
+        Task AddAsync(long aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default);
 
         Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default);
 

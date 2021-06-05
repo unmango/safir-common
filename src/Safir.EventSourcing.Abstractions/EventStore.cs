@@ -10,11 +10,14 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public abstract class EventStore : IEventStore
     {
-        public abstract Task AddAsync(IEvent @event, CancellationToken cancellationToken = default);
+        public abstract Task AddAsync(long aggregateId, IEvent @event, CancellationToken cancellationToken = default);
 
-        public virtual Task AddAsync(IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
+        public virtual Task AddAsync(
+            long aggregateId,
+            IEnumerable<IEvent> events,
+            CancellationToken cancellationToken = default)
         {
-            return Task.WhenAll(events.Select(x => AddAsync(x, cancellationToken)));
+            return Task.WhenAll(events.Select(x => AddAsync(aggregateId, x, cancellationToken)));
         }
 
         public abstract Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default);

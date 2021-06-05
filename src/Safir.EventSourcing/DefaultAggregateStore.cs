@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -19,8 +20,12 @@ namespace Safir.EventSourcing
         public Task StoreAsync<T>(T aggregate, CancellationToken cancellationToken = default)
             where T : IAggregate
         {
+            var events = aggregate.DequeueEvents().ToList();
+            
+            if (!events.Any()) return Task.CompletedTask;
+            
             _logger.LogTrace("Adding events to event store");
-            return _store.AddAsync(aggregate.DequeueEvents(), cancellationToken);
+            return _store.AddAsync(aggregate.Id, events, cancellationToken);
         }
 
         public ValueTask<T> GetAsync<T>(long id, CancellationToken cancellationToken = default)

@@ -14,13 +14,11 @@ namespace Safir.EventSourcing.Tests
     {
         private readonly AutoMocker _mocker = new();
         private readonly Mock<IEventStore> _eventStore;
-        private readonly Mock<IEventSerializer> _serializer;
         private readonly DefaultAggregateStore _store;
 
         public DefaultAggregateStoreTests()
         {
             _eventStore = _mocker.GetMock<IEventStore>();
-            _serializer = _mocker.GetMock<IEventSerializer>();
             _store = _mocker.CreateInstance<DefaultAggregateStore>();
         }
 
@@ -35,12 +33,7 @@ namespace Safir.EventSourcing.Tests
 
             await _store.StoreAsync(aggregate);
 
-            _serializer.Verify(
-                x => x.SerializeAsync(It.IsAny<long>(), It.IsAny<IEvent>(), It.IsAny<CancellationToken>()),
-                Times.Exactly(count));
-
-            _eventStore.Verify(x => x.AddAsync(
-                It.Is<IEnumerable<IEvent>>(y => y.Count() == count),
+            _eventStore.Verify(x => x.AddAsync(aggregate.Id, It.Is<IEnumerable<IEvent>>(y => y.Count() == count),
                 It.IsAny<CancellationToken>()));
         }
 
@@ -51,7 +44,6 @@ namespace Safir.EventSourcing.Tests
 
             await _store.StoreAsync(aggregate);
 
-            _serializer.VerifyNoOtherCalls();
             _eventStore.VerifyNoOtherCalls();
         }
 
@@ -63,13 +55,13 @@ namespace Safir.EventSourcing.Tests
         {
             var events = AsyncEnumerable.Repeat(new FakeEvent(), count);
             const long id = 420;
-            _eventStore.Setup(x => x.StreamAsync(id, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            _eventStore
+                .Setup(x => x.StreamAsync(id, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .Returns(events);
 
             var aggregate = await _store.GetAsync<FakeAggregate>(id);
 
             _eventStore.Verify();
-            _serializer.Verify(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()), Times.Exactly(count));
             Assert.NotNull(aggregate);
             Assert.Equal(count, aggregate.NumApplied);
         }
@@ -89,7 +81,6 @@ namespace Safir.EventSourcing.Tests
             var aggregate = await _store.GetAsync<FakeAggregate>(id, version);
 
             _eventStore.Verify();
-            _serializer.Verify(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()), Times.Exactly(count));
             Assert.NotNull(aggregate);
             Assert.Equal(count, aggregate.NumApplied);
         }

@@ -27,10 +27,10 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task AddAsync(IEvent @event, CancellationToken cancellationToken = default)
+        public async Task AddAsync(long aggregateId, IEvent @event, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Serializing event {Event}", @event);
-            var serialized = await _serializer.SerializeAsync(420, @event, cancellationToken); // TODO
+            var serialized = await _serializer.SerializeAsync(aggregateId, @event, cancellationToken);
             _logger.LogTrace("Serialized event {Event}", @event);
             
             _logger.LogTrace("Adding event {Event}", @event);
@@ -42,10 +42,10 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger.LogTrace("Saved changes asynchronously");
         }
 
-        public async Task AddAsync(IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
+        public async Task AddAsync(long aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Serializing events {Events}", events);
-            var serialized = await events.Select(x => _serializer.SerializeAsync(420, x, cancellationToken)); // TODO
+            var serialized = await events.Select(x => _serializer.SerializeAsync(aggregateId, x, cancellationToken));
             _logger.LogTrace("Serialized events {Events}", events);
             
             _logger.LogTrace("Adding events {Events}", events);
