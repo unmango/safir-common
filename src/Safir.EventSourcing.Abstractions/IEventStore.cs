@@ -9,6 +9,7 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public interface IEventStore
     {
+        // TODO: Accept generic event?
         Task AddAsync(long aggregateId, IEvent @event, CancellationToken cancellationToken = default);
 
         Task AddAsync(long aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default);

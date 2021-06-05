@@ -60,7 +60,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         public Task<IEvent> GetAsync(long id, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Getting single event with id {Id}", id);
-            return GetEventSet().AsQueryable().FirstAsync(x => x.Id == id, cancellationToken)
+            return GetEventSet().FirstAsync(x => x.Id == id, cancellationToken)
                 .Bind(x => Deserialize(x, cancellationToken));
         }
 
