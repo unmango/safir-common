@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Safir.Common;
 using Safir.Common.Buffers;
 
@@ -14,10 +13,6 @@ namespace Safir.EventSourcing
     {
         private static readonly JsonSerializerOptions _options = new();
         private static readonly JsonWriterOptions _writerOptions = new();
-        private static readonly Lazy<DefaultSerializer> _instance = new();
-
-        [PublicAPI]
-        public static ISerializer Instance => _instance.Value;
 
         public T Deserialize<T>(ReadOnlyMemory<byte> value)
         {

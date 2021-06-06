@@ -7,10 +7,6 @@ namespace Safir.EventSourcing
 {
     public sealed class DefaultEventMetadataProvider : IEventMetadataProvider
     {
-        private static readonly Lazy<DefaultEventMetadataProvider> _instance = new();
-
-        public static DefaultEventMetadataProvider Instance => _instance.Value;
-        
         public string GetTypeDiscriminator<T>(T @event, int version)
             where T : IEvent
         {
