@@ -2,7 +2,6 @@ using System.Data.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace Safir.EventSourcing.EntityFrameworkCore.Tests
@@ -10,7 +9,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
     public sealed class TestContext : DbContext
     {
         private readonly DbConnection _connection;
-        
+
         public TestContext() : base(BuildOptions())
         {
             Database.EnsureCreated();
@@ -20,12 +19,12 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new EventConfiguration());
-            
+
             // Limitation of SQLite in memory provider
             modelBuilder.Entity<Event>().Property(x => x.Id)
-                .HasValueGenerator((p, e) => new SequentialLongValueGenerator(p, e));
+                .HasValueGenerator((_, _) => new SequentialLongValueGenerator());
             modelBuilder.Entity<Event>().Property(x => x.Position)
-                .HasValueGenerator((p, e) => new SequentialIntValueGenerator(p, e));
+                .HasValueGenerator((_, _) => new SequentialIntValueGenerator());
         }
 
         public override void Dispose()
@@ -34,8 +33,8 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             base.Dispose();
         }
 
-        private static DbContextOptions<TestContext> BuildOptions() =>
-            new DbContextOptionsBuilder<TestContext>()
+        private static DbContextOptions<TestContext> BuildOptions()
+            => new DbContextOptionsBuilder<TestContext>()
                 .UseSqlite(CreateDatabase())
                 .Options;
 
@@ -48,16 +47,8 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
 
         private class SequentialLongValueGenerator : ValueGenerator<long>
         {
-            private readonly IProperty _property;
-            private readonly IEntityType _entityType;
-            private long _last = 0;
+            private long _last;
 
-            public SequentialLongValueGenerator(IProperty property, IEntityType entityType)
-            {
-                _property = property;
-                _entityType = entityType;
-            }
-            
             public override long Next(EntityEntry entry)
             {
                 return ++_last;
@@ -68,16 +59,8 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
 
         private class SequentialIntValueGenerator : ValueGenerator<int>
         {
-            private readonly IProperty _property;
-            private readonly IEntityType _entityType;
-            private int _last = 0;
+            private int _last;
 
-            public SequentialIntValueGenerator(IProperty property, IEntityType entityType)
-            {
-                _property = property;
-                _entityType = entityType;
-            }
-            
             public override int Next(EntityEntry entry)
             {
                 return ++_last;
