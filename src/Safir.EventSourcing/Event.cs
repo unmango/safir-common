@@ -6,7 +6,7 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public sealed record Metadata(Guid CorrelationId, Guid CausationId)
     {
-        internal static Metadata Empty = new();
+        public static Metadata Empty = new();
 
         public Metadata() : this(Guid.Empty, Guid.Empty) { }
 
