@@ -6,7 +6,10 @@ using Safir.Messaging;
 namespace Safir.EventSourcing
 {
     [PublicAPI]
-    public abstract record Aggregate : Aggregate<Guid>, IAggregate;
+    public abstract record Aggregate : Aggregate<Guid>, IAggregate
+    {
+        protected Aggregate() => Id = Guid.NewGuid();
+    }
     
     [PublicAPI]
     public abstract record Aggregate<T> : IAggregate<T>
