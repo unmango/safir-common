@@ -63,12 +63,13 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
         public async Task GetAsync_GetsEventMatchingId()
         {
             var serialized = new Event(420, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
-            var entity = await _context.AddAsync(serialized);
+            var entry = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.AddAsync(serialized with { Metadata = new Metadata() });
             await _context.SaveChangesAsync();
 
-            await _store.GetAsync(entity.Entity.Id);
+            await _store.GetAsync(entry.Entity.Id);
             
-            _serializer.Verify(x => x.DeserializeAsync(serialized, It.IsAny<CancellationToken>()));
+            _serializer.Verify(x => x.DeserializeAsync(entry.Entity, It.IsAny<CancellationToken>()));
         }
 
         private record MockEvent : IEvent

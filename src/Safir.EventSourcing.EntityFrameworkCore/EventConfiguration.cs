@@ -16,7 +16,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             builder.Property(x => x.Version).IsRequired();
 
             builder.HasKey(x => new { x.AggregateId, x.Position });
-            
+
             builder.OwnsOne(x => x.Metadata, metadataBuilder => {
                 metadataBuilder.Property(x => x.CorrelationId).IsRequired();
                 metadataBuilder.Property(x => x.CausationId).IsRequired();

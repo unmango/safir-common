@@ -30,7 +30,8 @@ namespace Safir.EventSourcing
             new Metadata(),
             default);
 
-        public Event(long aggregateId, string type, byte[] data, DateTime occurred, int version)
+        // For EF binding
+        private Event(long aggregateId, string type, byte[] data, DateTime occurred, int version)
             : this(aggregateId, type, data, occurred, Metadata.Empty, version) { }
 
         public long Id { get; init; }

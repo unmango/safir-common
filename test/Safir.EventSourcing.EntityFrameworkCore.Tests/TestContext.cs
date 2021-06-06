@@ -1,6 +1,9 @@
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace Safir.EventSourcing.EntityFrameworkCore.Tests
 {
@@ -19,8 +22,10 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             
             // Limitation of SQLite in memory provider
-            modelBuilder.Entity<Event>().Property(x => x.Id).HasDefaultValue(69);
-            modelBuilder.Entity<Event>().Property(x => x.Position).HasDefaultValue(69);
+            modelBuilder.Entity<Event>().Property(x => x.Id)
+                .HasValueGenerator((p, e) => new SequentialLongValueGenerator(p, e));
+            modelBuilder.Entity<Event>().Property(x => x.Position)
+                .HasValueGenerator((p, e) => new SequentialIntValueGenerator(p, e));
         }
 
         public override void Dispose()
@@ -39,6 +44,46 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             var connection = new SqliteConnection("Filename=:memory:");
             connection.Open();
             return connection;
+        }
+
+        private class SequentialLongValueGenerator : ValueGenerator<long>
+        {
+            private readonly IProperty _property;
+            private readonly IEntityType _entityType;
+            private long _last = 0;
+
+            public SequentialLongValueGenerator(IProperty property, IEntityType entityType)
+            {
+                _property = property;
+                _entityType = entityType;
+            }
+            
+            public override long Next(EntityEntry entry)
+            {
+                return ++_last;
+            }
+
+            public override bool GeneratesTemporaryValues => false;
+        }
+
+        private class SequentialIntValueGenerator : ValueGenerator<int>
+        {
+            private readonly IProperty _property;
+            private readonly IEntityType _entityType;
+            private int _last = 0;
+
+            public SequentialIntValueGenerator(IProperty property, IEntityType entityType)
+            {
+                _property = property;
+                _entityType = entityType;
+            }
+            
+            public override int Next(EntityEntry entry)
+            {
+                return ++_last;
+            }
+
+            public override bool GeneratesTemporaryValues => false;
         }
     }
 }
