@@ -55,7 +55,7 @@ namespace Safir.EventSourcing.Tests
             const string discriminator = "type";
             var type = typeof(MockEvent);
             const int version = 69;
-            var value = new Event(420, discriminator, ReadOnlyMemory<byte>.Empty, DateTime.Now, new Metadata(), version);
+            var value = new Event(420, discriminator, Array.Empty<byte>(), DateTime.Now, new Metadata(), version);
             _metadataProvider.Setup(x => x.GetTypeAsync(discriminator, version, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(type);
 

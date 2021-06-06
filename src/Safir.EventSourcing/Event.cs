@@ -6,6 +6,8 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public sealed record Metadata(Guid CorrelationId, Guid CausationId)
     {
+        internal static Metadata Empty = new();
+
         public Metadata() : this(Guid.Empty, Guid.Empty) { }
 
         public Metadata(Guid correlationId) : this(correlationId, Guid.Empty) { }
@@ -15,21 +17,24 @@ namespace Safir.EventSourcing
     public record Event(
         long AggregateId,
         string Type,
-        ReadOnlyMemory<byte> Data,
+        byte[] Data,
         DateTime Occurred,
         Metadata Metadata,
         int Version)
     {
-        public long Id { get; init; }
-
-        public int Position { get; init; }
-
         internal static Event Empty = new(
             default,
             nameof(Event),
-            ReadOnlyMemory<byte>.Empty,
+            Array.Empty<byte>(),
             default,
             new Metadata(),
             default);
+
+        public Event(long aggregateId, string type, byte[] data, DateTime occurred, int version)
+            : this(aggregateId, type, data, occurred, Metadata.Empty, version) { }
+
+        public long Id { get; init; }
+
+        public int Position { get; init; }
     }
 }

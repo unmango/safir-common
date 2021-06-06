@@ -35,7 +35,7 @@ namespace Safir.EventSourcing
             var type = await _metadataProvider.GetTypeDiscriminatorAsync(@event, @event.Version, cancellationToken);
 
             _logger.LogTrace("Constructing serialized event");
-            return new Event(aggregateId, type, data, @event.Occurred, @event.GetMetadata(), @event.Version);
+            return new Event(aggregateId, type, data.ToArray(), @event.Occurred, @event.GetMetadata(), @event.Version);
         }
 
         public async ValueTask<IEvent> DeserializeAsync(Event @event, CancellationToken cancellationToken = default)

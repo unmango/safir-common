@@ -1,12 +1,44 @@
+using System.Data.Common;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Safir.EventSourcing.EntityFrameworkCore.Tests
 {
-    public class TestContext : DbContext
+    public sealed class TestContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        private readonly DbConnection _connection;
+        
+        public TestContext() : base(BuildOptions())
         {
-            optionsBuilder.UseSqlite("Filename=:memory:");
+            Database.EnsureCreated();
+            _connection = Database.GetDbConnection();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new EventConfiguration());
+            
+            // Limitation of SQLite in memory provider
+            modelBuilder.Entity<Event>().Property(x => x.Id).HasDefaultValue(69);
+            modelBuilder.Entity<Event>().Property(x => x.Position).HasDefaultValue(69);
+        }
+
+        public override void Dispose()
+        {
+            _connection.Dispose();
+            base.Dispose();
+        }
+
+        private static DbContextOptions<TestContext> BuildOptions() =>
+            new DbContextOptionsBuilder<TestContext>()
+                .UseSqlite(CreateDatabase())
+                .Options;
+
+        private static DbConnection CreateDatabase()
+        {
+            var connection = new SqliteConnection("Filename=:memory:");
+            connection.Open();
+            return connection;
         }
     }
 }

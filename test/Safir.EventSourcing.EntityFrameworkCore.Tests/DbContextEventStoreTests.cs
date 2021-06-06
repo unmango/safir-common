@@ -11,19 +11,16 @@ using Xunit;
 
 namespace Safir.EventSourcing.EntityFrameworkCore.Tests
 {
-    public class DbContextEventStoreTests
+    public class DbContextEventStoreTests : IAsyncDisposable
     {
         private readonly AutoMocker _mocker = new();
-        private readonly Mock<TestContext> _context;
-        private readonly Mock<DbSet<Event>> _eventSet;
+        private readonly TestContext _context = new();
         private readonly Mock<IEventSerializer> _serializer;
         private readonly DbContextEventStore<TestContext> _store;
 
         public DbContextEventStoreTests()
         {
-            _context = _mocker.GetMock<TestContext>();
-            _eventSet = _mocker.GetMock<DbSet<Event>>();
-            _context.Setup(x => x.Set<Event>()).Returns(_eventSet.Object);
+            _mocker.Use(_context);
             _serializer = _mocker.GetMock<IEventSerializer>();
             _store = _mocker.CreateInstance<DbContextEventStore<TestContext>>();
         }
@@ -33,7 +30,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
         {
             const long id = 420;
             IEvent value = new MockEvent();
-            var serialized = new Event(id, "type", ReadOnlyMemory<byte>.Empty, DateTime.Now, new Metadata(), 69);
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
             _serializer.Setup(x => x.SerializeAsync(id, value, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(serialized)
                 .Verifiable();
@@ -41,8 +38,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             await _store.AddAsync(id, value);
             
             _serializer.Verify();
-            _context.Verify(x => x.AddAsync(serialized, It.IsAny<CancellationToken>()));
-            _context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            Assert.Contains(serialized, _context.Set<Event>());
         }
 
         [Theory]
@@ -53,27 +49,37 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
         {
             const long id = 420;
             var events = Enumerable.Repeat(new MockEvent(), count).Cast<IEvent>();
-            var serialized = new Event(id, "type", ReadOnlyMemory<byte>.Empty, DateTime.Now, new Metadata(), 69);
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
             _serializer.Setup(x => x.SerializeAsync(id, It.IsAny<IEvent>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(serialized);
 
             await _store.AddAsync(id, events);
             
             _serializer.Verify(x => x.SerializeAsync(id, It.IsAny<IEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(count));
-            _context.Verify(x => x.AddRangeAsync(It.Is<IEnumerable<Event>>(y => y.Count() == count), It.IsAny<CancellationToken>()));
-            _context.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            Assert.Contains(serialized, _context.Set<Event>());
         }
 
         [Fact]
         public async Task GetAsync_GetsEventMatchingId()
         {
+            var serialized = new Event(420, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            var entity = await _context.AddAsync(serialized);
+            await _context.SaveChangesAsync();
+
+            await _store.GetAsync(entity.Entity.Id);
             
+            _serializer.Verify(x => x.DeserializeAsync(serialized, It.IsAny<CancellationToken>()));
         }
 
         private record MockEvent : IEvent
         {
             // ReSharper disable once UnassignedGetOnlyAutoProperty
             public DateTime Occurred { get; }
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return _context.DisposeAsync();
         }
     }
 }

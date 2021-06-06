@@ -9,7 +9,6 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         public static void ConfigureEvents(this ModelBuilder builder)
         {
             builder.ApplyConfiguration(new EventConfiguration());
-            builder.ApplyConfiguration(new MetadataConfiguration());
         }
     }
 }
