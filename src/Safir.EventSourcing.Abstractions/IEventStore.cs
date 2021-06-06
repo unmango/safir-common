@@ -8,7 +8,7 @@ using Safir.Messaging;
 namespace Safir.EventSourcing
 {
     [PublicAPI]
-    public interface IEventStore : IEventStore<Guid, Guid> { }
+    public interface IEventStore : IEventStore<Guid> { }
     
     [PublicAPI]
     public interface IEventStore<in T> : IEventStore<T, Guid> { }
