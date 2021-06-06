@@ -20,6 +20,7 @@ namespace Safir.EventSourcing
         public Task StoreAsync<T>(T aggregate, CancellationToken cancellationToken = default)
             where T : IAggregate
         {
+            _logger.LogTrace("Dequeuing events on aggregate {Id}", aggregate.Id);
             var events = aggregate.DequeueEvents().ToList();
             
             if (!events.Any()) return Task.CompletedTask;
@@ -28,17 +29,19 @@ namespace Safir.EventSourcing
             return _store.AddAsync(aggregate.Id, events, cancellationToken);
         }
 
-        public ValueTask<T> GetAsync<T>(long id, CancellationToken cancellationToken = default)
+        public ValueTask<T> GetAsync<T>(Guid id, CancellationToken cancellationToken = default)
             where T : IAggregate, new()
         {
+            _logger.LogDebug("Getting event stream for aggregate {Id}", id);
             // TODO: This cancellation token situation...
             return _store.StreamAsync(id, cancellationToken)
                 .AggregateAsync<T>(cancellationToken);
         }
 
-        public ValueTask<T> GetAsync<T>(long id, int version, CancellationToken cancellationToken = default)
+        public ValueTask<T> GetAsync<T>(Guid id, int version, CancellationToken cancellationToken = default)
             where T : IAggregate, new()
         {
+            _logger.LogDebug("Getting event stream for aggregate {Id} with version {Version}", id, version);
             // TODO: This cancellation token situation...
             return _store.StreamAsync(id, version, cancellationToken)
                 .AggregateAsync<T>(cancellationToken);
