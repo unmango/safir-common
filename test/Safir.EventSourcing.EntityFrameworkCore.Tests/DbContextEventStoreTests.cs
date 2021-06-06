@@ -63,6 +63,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
         public async Task GetAsync_GetsEventMatchingId()
         {
             var serialized = new Event(420, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            // EF sets Metadata to `null` on AddAsync for some reason... using different objects seems to fix it
             var entry = await _context.AddAsync(serialized with { Metadata = new Metadata() });
             await _context.AddAsync(serialized with { Metadata = new Metadata() });
             await _context.SaveChangesAsync();
