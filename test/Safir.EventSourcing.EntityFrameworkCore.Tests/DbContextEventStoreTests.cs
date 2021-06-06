@@ -73,10 +73,181 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             _serializer.Verify(x => x.DeserializeAsync(entry.Entity, It.IsAny<CancellationToken>()));
         }
 
+        [Fact]
+        public async Task StreamBackwardsAsync_ReturnsEventsReversed()
+        {
+            const long id = 420;
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            // EF sets Metadata to `null` on AddAsync for some reason... using different objects seems to fix it
+            var entry1 = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            var entry2 = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.SaveChangesAsync();
+            _serializer.Setup(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()))
+                .Returns<Event, CancellationToken>((@event, _) => new ValueTask<IEvent>(new MockEvent(@event.Position)));
+
+            var stream = _store.StreamBackwardsAsync(id);
+            
+            Assert.NotNull(stream);
+            var enumerator = stream.GetAsyncEnumerator();
+            
+            await enumerator.MoveNextAsync();
+            Assert.NotNull(enumerator.Current);
+            var first = Assert.IsType<MockEvent>(enumerator.Current);
+            Assert.Equal(entry2.Entity.Position, first.Position);
+            
+            await enumerator.MoveNextAsync();
+            Assert.NotNull(enumerator.Current);
+            var second = Assert.IsType<MockEvent>(enumerator.Current);
+            Assert.Equal(entry1.Entity.Position, second.Position);
+        }
+
+        [Fact]
+        public async Task StreamBackwardsAsync_ReturnsCorrectAggregateStream()
+        {
+            const long id = 420;
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            // EF sets Metadata to `null` on AddAsync for some reason... using different objects seems to fix it
+            var entry1 = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.AddAsync(serialized with { AggregateId = 69, Metadata = new Metadata() });
+            await _context.SaveChangesAsync();
+            _serializer.Setup(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()))
+                .Returns<Event, CancellationToken>((@event, _) => new ValueTask<IEvent>(new MockEvent(@event.Position)));
+
+            var stream = _store.StreamBackwardsAsync(id);
+            
+            Assert.NotNull(stream);
+            var enumerator = stream.GetAsyncEnumerator();
+            
+            await enumerator.MoveNextAsync();
+            Assert.NotNull(enumerator.Current);
+            var first = Assert.IsType<MockEvent>(enumerator.Current);
+            Assert.Equal(entry1.Entity.Position, first.Position);
+
+            Assert.False(await enumerator.MoveNextAsync());
+        }
+
+        [Fact]
+        public async Task StreamBackwardsAsync_ReturnsRequestedCount()
+        {
+            const long id = 420;
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            // EF sets Metadata to `null` on AddAsync for some reason... using different objects seems to fix it
+            await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            var entry2 = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.SaveChangesAsync();
+            _serializer.Setup(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()))
+                .Returns<Event, CancellationToken>((@event, _) => new ValueTask<IEvent>(new MockEvent(@event.Position)));
+
+            var stream = _store.StreamBackwardsAsync(id, 1);
+            
+            Assert.NotNull(stream);
+            var enumerator = stream.GetAsyncEnumerator();
+            
+            await enumerator.MoveNextAsync();
+            Assert.NotNull(enumerator.Current);
+            var first = Assert.IsType<MockEvent>(enumerator.Current);
+            Assert.Equal(entry2.Entity.Position, first.Position);
+
+            Assert.False(await enumerator.MoveNextAsync());
+        }
+
+        [Fact]
+        public void StreamAsync_ThrowsWhenStartIsAfterEnd()
+        {
+            Assert.Throws<InvalidOperationException>(() => _store.StreamAsync(420, 69, 68));
+        }
+
+        [Fact]
+        public async Task StreamAsync_ReturnsCorrectAggregateStream()
+        {
+            const long id = 420;
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            // EF sets Metadata to `null` on AddAsync for some reason... using different objects seems to fix it
+            var entry1 = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.AddAsync(serialized with { AggregateId = 69, Metadata = new Metadata() });
+            await _context.SaveChangesAsync();
+            _serializer.Setup(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()))
+                .Returns<Event, CancellationToken>((@event, _) => new ValueTask<IEvent>(new MockEvent(@event.Position)));
+
+            var stream = _store.StreamAsync(id);
+            
+            Assert.NotNull(stream);
+            var enumerator = stream.GetAsyncEnumerator();
+            
+            await enumerator.MoveNextAsync();
+            Assert.NotNull(enumerator.Current);
+            var first = Assert.IsType<MockEvent>(enumerator.Current);
+            Assert.Equal(entry1.Entity.Position, first.Position);
+
+            Assert.False(await enumerator.MoveNextAsync());
+        }
+
+        [Fact]
+        public async Task StreamAsync_ReturnsEventsStartingAtStartPosition()
+        {
+            const long id = 420;
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            // EF sets Metadata to `null` on AddAsync for some reason... using different objects seems to fix it
+            await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            var entry2 = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.SaveChangesAsync();
+            _serializer.Setup(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()))
+                .Returns<Event, CancellationToken>((@event, _) => new ValueTask<IEvent>(new MockEvent(@event.Position)));
+
+            var stream = _store.StreamAsync(id, entry2.Entity.Position);
+            
+            Assert.NotNull(stream);
+            var enumerator = stream.GetAsyncEnumerator();
+            
+            await enumerator.MoveNextAsync();
+            Assert.NotNull(enumerator.Current);
+            var first = Assert.IsType<MockEvent>(enumerator.Current);
+            Assert.Equal(entry2.Entity.Position, first.Position);
+
+            Assert.False(await enumerator.MoveNextAsync());
+        }
+
+        [Fact]
+        public async Task StreamAsync_ReturnsEventsEndingAtEndPosition()
+        {
+            const long id = 420;
+            var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
+            // EF sets Metadata to `null` on AddAsync for some reason... using different objects seems to fix it
+            var entry1 = await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.AddAsync(serialized with { Metadata = new Metadata() });
+            await _context.SaveChangesAsync();
+            _serializer.Setup(x => x.DeserializeAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()))
+                .Returns<Event, CancellationToken>((@event, _) => new ValueTask<IEvent>(new MockEvent(@event.Position)));
+
+            var stream = _store.StreamAsync(id, 0, entry1.Entity.Position);
+            
+            Assert.NotNull(stream);
+            var enumerator = stream.GetAsyncEnumerator();
+            
+            await enumerator.MoveNextAsync();
+            Assert.NotNull(enumerator.Current);
+            var first = Assert.IsType<MockEvent>(enumerator.Current);
+            Assert.Equal(entry1.Entity.Position, first.Position);
+
+            Assert.False(await enumerator.MoveNextAsync());
+        }
+
         private record MockEvent : IEvent
         {
+            public MockEvent()
+            {
+                Position = default;
+            }
+            
+            public MockEvent(int position)
+            {
+                Position = position;
+            }
+            
             // ReSharper disable once UnassignedGetOnlyAutoProperty
             public DateTime Occurred { get; }
+            
+            public int Position { get; }
         }
 
         public ValueTask DisposeAsync()

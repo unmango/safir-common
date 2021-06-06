@@ -70,15 +70,18 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             CancellationToken cancellationToken = default)
         {
             var logCount = count.HasValue ? $"{count}" : "all";
-            _logger.LogTrace("Streaming {Count} events backwards with aggregate Id {Id}", logCount, aggregateId);
-            return GetEventSet().OrderByDescending(x => x.Position).Take(count ?? int.MaxValue)
+            _logger.LogTrace("Streaming {Count} event(s) backwards with aggregate Id {Id}", logCount, aggregateId);
+            return GetEventSet()
+                .Where(x => x.AggregateId == aggregateId)
+                .OrderByDescending(x => x.Position)
+                .Take(count ?? int.MaxValue)
                 .AsAsyncEnumerable()
                 .DeserializeAsync(_serializer, cancellationToken);
         }
 
         public IAsyncEnumerable<IEvent> StreamAsync(
             long aggregateId,
-            int startPosition = int.MinValue,
+            int startPosition = 0,
             int endPosition = int.MaxValue,
             CancellationToken cancellationToken = default)
         {
