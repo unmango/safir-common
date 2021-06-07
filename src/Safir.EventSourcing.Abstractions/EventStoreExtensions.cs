@@ -11,6 +11,15 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public static class EventStoreExtensions
     {
+        public static Task<T> CreateAsync<T>(
+            this IEventStore store,
+            IEvent @event,
+            CancellationToken cancellationToken = default)
+            where T : IAggregate, new()
+        {
+            return store.CreateAsync<T, Guid>(@event, cancellationToken);
+        }
+        
         public static async Task<TAggregate> CreateAsync<TAggregate, TId>(
             this IEventStore<TId> store,
             IEvent @event,
@@ -21,6 +30,15 @@ namespace Safir.EventSourcing
             await store.AddAsync(aggregate.Id, @event, cancellationToken);
             aggregate.Apply(@event);
             return aggregate;
+        }
+        
+        public static Task<T> CreateAsync<T>(
+            this IEventStore store,
+            IEnumerable<IEvent> events,
+            CancellationToken cancellationToken = default)
+            where T : IAggregate, new()
+        {
+            return store.CreateAsync<T, Guid>(events, cancellationToken);
         }
         
         public static async Task<TAggregate> CreateAsync<TAggregate, TId>(
