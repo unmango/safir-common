@@ -126,5 +126,52 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         {
             return _serializer.DeserializeAsync<T>(@event, cancellationToken).AsTask();
         }
+
+        public async Task AddAsync<TAggregateId>(TAggregateId aggregateId, IEvent @event, CancellationToken cancellationToken = default)
+        {
+            _logger.LogTrace("Serializing event {Event}", @event);
+            var serialized = await _serializer.SerializeAsync(aggregateId, @event, cancellationToken);
+            _logger.LogTrace("Serialized event {Event}", @event);
+            
+            _logger.LogTrace("Adding event {Event}", @event);
+            await _context.AddAsync(serialized, cancellationToken);
+            _logger.LogTrace("Added event {Event}", @event);
+
+            _logger.LogTrace("Saving changes asynchronously");
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogTrace("Saved changes asynchronously");
+        }
+
+        public Task AddAsync<TAggregateId>(TAggregateId aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEvent> GetAsync<TId>(TId id, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> GetAsync<T, TId>(TId id, CancellationToken cancellationToken = default) where T : IEvent
+        {
+            throw new NotImplementedException();
+        }
+
+        public IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
+            TAggregateId aggregateId,
+            int startPosition = 0,
+            int endPosition = Int32.MaxValue,
+            CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId>(
+            TAggregateId aggregateId,
+            int? count = null,
+            CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
