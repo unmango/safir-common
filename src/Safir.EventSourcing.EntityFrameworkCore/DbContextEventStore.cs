@@ -27,36 +27,6 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task AddAsync(Guid aggregateId, IEvent @event, CancellationToken cancellationToken = default)
-        {
-            _logger.LogTrace("Serializing event {Event}", @event);
-            var serialized = await _serializer.SerializeAsync(aggregateId, @event, cancellationToken);
-            _logger.LogTrace("Serialized event {Event}", @event);
-            
-            _logger.LogTrace("Adding event {Event}", @event);
-            await _context.AddAsync(serialized, cancellationToken);
-            _logger.LogTrace("Added event {Event}", @event);
-
-            _logger.LogTrace("Saving changes asynchronously");
-            await _context.SaveChangesAsync(cancellationToken);
-            _logger.LogTrace("Saved changes asynchronously");
-        }
-
-        public async Task AddAsync(Guid aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
-        {
-            _logger.LogTrace("Serializing events {Events}", events);
-            var serialized = await events.Select(x => _serializer.SerializeAsync(aggregateId, x, cancellationToken));
-            _logger.LogTrace("Serialized events {Events}", events);
-            
-            _logger.LogTrace("Adding events {Events}", events);
-            await _context.AddRangeAsync(serialized, cancellationToken);
-            _logger.LogTrace("Added events {Events}", events);
-
-            _logger.LogTrace("Saving changes asynchronously");
-            await _context.SaveChangesAsync(cancellationToken);
-            _logger.LogTrace("Saved changes asynchronously");
-        }
-
         public Task<IEvent> GetAsync(Guid id, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Getting single event with id {Id}", id);
@@ -111,9 +81,9 @@ namespace Safir.EventSourcing.EntityFrameworkCore
                 .DeserializeAsync(_serializer, cancellationToken);
         }
 
-        protected virtual IQueryable<Event> GetEventSet()
+        protected virtual IQueryable<Event<TAggregateId, TId>> GetEventSet<TAggregateId, TId>()
         {
-            return _context.Set<Event>().AsNoTracking();
+            return _context.Set<Event<TAggregateId, TId>>().AsNoTracking();
         }
 
         private Task<IEvent> Deserialize(Event @event, CancellationToken cancellationToken)
@@ -142,14 +112,26 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger.LogTrace("Saved changes asynchronously");
         }
 
-        public Task AddAsync<TAggregateId>(TAggregateId aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
+        public async Task AddAsync<TAggregateId>(TAggregateId aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _logger.LogTrace("Serializing events {Events}", events);
+            var serialized = await events.Select(x => _serializer.SerializeAsync(aggregateId, x, cancellationToken));
+            _logger.LogTrace("Serialized events {Events}", events);
+            
+            _logger.LogTrace("Adding events {Events}", events);
+            await _context.AddRangeAsync(serialized, cancellationToken);
+            _logger.LogTrace("Added events {Events}", events);
+
+            _logger.LogTrace("Saving changes asynchronously");
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogTrace("Saved changes asynchronously");
         }
 
         public Task<IEvent> GetAsync<TId>(TId id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _logger.LogTrace("Getting single event with id {Id}", id);
+            return GetEventSet<Guid, TId>().SingleAsync(x => x.Id == id, cancellationToken)
+                .Bind(x => Deserialize(x, cancellationToken));
         }
 
         public Task<T> GetAsync<T, TId>(TId id, CancellationToken cancellationToken = default) where T : IEvent
