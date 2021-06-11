@@ -7,45 +7,26 @@ using Safir.Messaging;
 
 namespace Safir.EventSourcing
 {
-    public class DefaultEventSerializer : DefaultEventSerializer<Guid, Guid>, IEventSerializer
+    public class DefaultEventSerializer : IEventSerializer
     {
+        private readonly ISerializer _serializer;
+        private readonly IEventMetadataProvider _metadataProvider;
+        private readonly ILogger<DefaultEventSerializer> _logger;
+
         public DefaultEventSerializer(
             ISerializer serializer,
             IEventMetadataProvider metadataProvider,
             ILogger<DefaultEventSerializer> logger)
-            : base(serializer, metadataProvider, logger) { }
-    }
-
-    public class DefaultEventSerializer<T> : DefaultEventSerializer<T, Guid>, IEventSerializer<T>
-    {
-        public DefaultEventSerializer(
-            ISerializer serializer,
-            IEventMetadataProvider metadataProvider,
-            ILogger<DefaultEventSerializer<T>> logger)
-            : base(serializer, metadataProvider, logger) { }
-    }
-
-    public class DefaultEventSerializer<TAggregateId, TId> : IEventSerializer<TAggregateId, TId>
-    {
-        private readonly ISerializer _serializer;
-        private readonly IEventMetadataProvider _metadataProvider;
-        private readonly ILogger<DefaultEventSerializer<TAggregateId, TId>> _logger;
-
-        public DefaultEventSerializer(
-            ISerializer serializer,
-            IEventMetadataProvider metadataProvider,
-            ILogger<DefaultEventSerializer<TAggregateId, TId>> logger)
         {
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _metadataProvider = metadataProvider ?? throw new ArgumentNullException(nameof(metadataProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async ValueTask<Event<TAggregateId, TId>> SerializeAsync<T>(
+        public async ValueTask<Event<TAggregateId, TId>> SerializeAsync<TAggregateId, TId>(
             TAggregateId aggregateId,
-            T @event,
+            IEvent @event,
             CancellationToken cancellationToken = default)
-            where T : IEvent
         {
             _logger.LogTrace("Serializing event as ReadOnlyMemory<T>");
             var data = await _serializer.SerializeAsMemoryAsync(@event, cancellationToken);
@@ -62,7 +43,7 @@ namespace Safir.EventSourcing
                 @event.Version);
         }
 
-        public async ValueTask<IEvent> DeserializeAsync(
+        public async ValueTask<IEvent> DeserializeAsync<TAggregateId, TId>(
             Event<TAggregateId, TId> @event,
             CancellationToken cancellationToken = default)
         {
@@ -73,7 +54,9 @@ namespace Safir.EventSourcing
             return (IEvent)await _serializer.DeserializeAsync(type, @event.Data, cancellationToken);
         }
 
-        public ValueTask<T> DeserializeAsync<T>(Event<TAggregateId, TId> @event, CancellationToken cancellationToken = default)
+        public ValueTask<T> DeserializeAsync<TAggregateId, TId, T>(
+            Event<TAggregateId, TId> @event,
+            CancellationToken cancellationToken = default)
             where T : IEvent
         {
             _logger.LogTrace("Deserializing using generic type argument");
