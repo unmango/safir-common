@@ -27,6 +27,17 @@ namespace Safir.EventSourcing
             return (Event<T>)await serializer.SerializeAsync<T, Guid>(aggregateId, @event, cancellationToken);
         }
 
+        // TODO: Ensure this doesn't cause ambiguity errors
+        public static ValueTask<Event<TAggregateId, TId>> SerializeAsync<TAggregateId, TId, T>(
+            this IEventSerializer serializer,
+            TAggregateId aggregateId,
+            T @event,
+            CancellationToken cancellationToken = default)
+            where T : IEvent
+        {
+            return serializer.SerializeAsync<TAggregateId, TId>(aggregateId, @event, cancellationToken);
+        }
+
         public static ValueTask<IEvent> DeserializeAsync(
             this IEventSerializer serializer,
             Event @event,
