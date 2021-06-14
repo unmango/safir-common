@@ -37,7 +37,9 @@ namespace Safir.EventSourcing
             int? count = null,
             CancellationToken cancellationToken = default)
         {
-            return StreamAsync(aggregateId, int.MaxValue, count ?? int.MinValue, cancellationToken);
+            // TODO: Swapping start/end is inconsistent in impl. For example the DBContext
+            // impl doesn't allow start to be after end
+            return StreamAsync(aggregateId, int.MaxValue, count ?? 0, cancellationToken);
         }
 
         public abstract IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
