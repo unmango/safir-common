@@ -86,15 +86,15 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             return _context.Set<Event<TAggregateId, TId>>().AsNoTracking();
         }
 
-        private Task<IEvent> Deserialize(Event @event, CancellationToken cancellationToken)
+        private Task<IEvent> Deserialize<TAggregateId, TId>(Event<TAggregateId, TId> @event, CancellationToken cancellationToken)
         {
             return _serializer.DeserializeAsync(@event, cancellationToken).AsTask();
         }
 
-        private Task<T> Deserialize<T>(Event @event, CancellationToken cancellationToken)
+        private Task<T> Deserialize<T, TAggregateId, TId>(Event<TAggregateId, TId> @event, CancellationToken cancellationToken)
             where T : IEvent
         {
-            return _serializer.DeserializeAsync<T>(@event, cancellationToken).AsTask();
+            return _serializer.DeserializeAsync<TAggregateId, TId, T>(@event, cancellationToken).AsTask();
         }
 
         public async Task AddAsync<TAggregateId>(TAggregateId aggregateId, IEvent @event, CancellationToken cancellationToken = default)
@@ -129,14 +129,18 @@ namespace Safir.EventSourcing.EntityFrameworkCore
 
         public Task<IEvent> GetAsync<TId>(TId id, CancellationToken cancellationToken = default)
         {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+            
             _logger.LogTrace("Getting single event with id {Id}", id);
-            return GetEventSet<Guid, TId>().SingleAsync(x => x.Id == id, cancellationToken)
+            return GetEventSet<Guid, TId>().SingleAsync(x => id.Equals(x.Id), cancellationToken)
                 .Bind(x => Deserialize(x, cancellationToken));
         }
 
         public Task<T> GetAsync<T, TId>(TId id, CancellationToken cancellationToken = default) where T : IEvent
         {
-            throw new NotImplementedException();
+            _logger.LogTrace("Getting single event with id {Id}", id);
+            return GetEventSet().SingleAsync(x => x.Id == id, cancellationToken)
+                .Bind(x => Deserialize<T>(x, cancellationToken));
         }
 
         public IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
