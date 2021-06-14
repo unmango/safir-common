@@ -21,7 +21,7 @@ namespace Safir.EventSourcing
         }
         
         public static async Task<TAggregate> CreateAsync<TAggregate, TId>(
-            this IEventStore<TId> store,
+            this IEventStore store,
             IEvent @event,
             CancellationToken cancellationToken = default)
             where TAggregate : IAggregate<TId>, new()
@@ -42,7 +42,7 @@ namespace Safir.EventSourcing
         }
         
         public static async Task<TAggregate> CreateAsync<TAggregate, TId>(
-            this IEventStore<TId> store,
+            this IEventStore store,
             IEnumerable<IEvent> events,
             CancellationToken cancellationToken = default)
             where TAggregate : IAggregate<TId>, new()
@@ -74,16 +74,16 @@ namespace Safir.EventSourcing
             return id;
         }
 
-        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId, TId>(
-            this IEventStore<TAggregateId, TId> store,
+        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
+            this IEventStore store,
             TAggregateId aggregateId,
             CancellationToken cancellationToken)
         {
             return store.StreamAsync(aggregateId, cancellationToken: cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId, TId>(
-            this IEventStore<TAggregateId, TId> store,
+        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
+            this IEventStore store,
             TAggregateId aggregateId,
             int startPosition,
             CancellationToken cancellationToken)
@@ -91,16 +91,16 @@ namespace Safir.EventSourcing
             return store.StreamAsync(aggregateId, startPosition, cancellationToken: cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId, TId>(
-            this IEventStore<TAggregateId, TId> store,
+        public static IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId>(
+            this IEventStore store,
             TAggregateId aggregateId,
             CancellationToken cancellationToken)
         {
             return store.StreamBackwardsAsync(aggregateId, null, cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamFromAsync<TAggregateId, TId>(
-            this IEventStore<TAggregateId, TId> store,
+        public static IAsyncEnumerable<IEvent> StreamFromAsync<TAggregateId>(
+            this IEventStore store,
             TAggregateId aggregateId,
             int startPosition,
             CancellationToken cancellationToken = default)
@@ -108,8 +108,8 @@ namespace Safir.EventSourcing
             return store.StreamAsync(aggregateId, startPosition, cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamUntilAsync<TAggregateId, TId>(
-            this IEventStore<TAggregateId, TId> store,
+        public static IAsyncEnumerable<IEvent> StreamUntilAsync<TAggregateId>(
+            this IEventStore store,
             TAggregateId aggregateId,
             int endPosition,
             CancellationToken cancellationToken = default)
