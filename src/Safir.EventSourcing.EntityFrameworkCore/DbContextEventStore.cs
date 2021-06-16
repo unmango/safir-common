@@ -27,12 +27,15 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task AddAsync<TAggregateId>(TAggregateId aggregateId, IEvent @event, CancellationToken cancellationToken = default)
+        public async Task AddAsync<TAggregateId>(
+            TAggregateId aggregateId,
+            IEvent @event,
+            CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Serializing event {Event}", @event);
             var serialized = await _serializer.SerializeAsync(aggregateId, @event, cancellationToken);
             _logger.LogTrace("Serialized event {Event}", @event);
-            
+
             _logger.LogTrace("Adding event {Event}", @event);
             await _context.AddAsync(serialized, cancellationToken);
             _logger.LogTrace("Added event {Event}", @event);
@@ -42,12 +45,15 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger.LogTrace("Saved changes asynchronously");
         }
 
-        public async Task AddAsync<TAggregateId>(TAggregateId aggregateId, IEnumerable<IEvent> events, CancellationToken cancellationToken = default)
+        public async Task AddAsync<TAggregateId>(
+            TAggregateId aggregateId,
+            IEnumerable<IEvent> events,
+            CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Serializing events {Events}", events);
             var serialized = await events.Select(x => _serializer.SerializeAsync(aggregateId, x, cancellationToken));
             _logger.LogTrace("Serialized events {Events}", events);
-            
+
             _logger.LogTrace("Adding events {Events}", events);
             await _context.AddRangeAsync(serialized, cancellationToken);
             _logger.LogTrace("Added events {Events}", events);
@@ -60,7 +66,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         public Task<IEvent> GetAsync<TId>(TId id, CancellationToken cancellationToken = default)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            
+
             _logger.LogTrace("Getting single event with id {Id}", id);
             return GetEventSet<Guid, TId>().SingleAsync(x => id.Equals(x.Id), cancellationToken)
                 .Bind(x => Deserialize(x, cancellationToken));
@@ -69,7 +75,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         public Task<T> GetAsync<T, TId>(TId id, CancellationToken cancellationToken = default) where T : IEvent
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            
+
             _logger.LogTrace("Getting single event with id {Id}", id);
             return GetEventSet<Guid, TId>().SingleAsync(x => id.Equals(x.Id), cancellationToken)
                 .Bind(x => Deserialize<T, Guid, TId>(x, cancellationToken));
@@ -82,7 +88,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             CancellationToken cancellationToken = default)
         {
             if (aggregateId == null) throw new ArgumentNullException(nameof(aggregateId));
-            
+
             if (startPosition > endPosition)
             {
                 throw new InvalidOperationException("Start position can't be after the end position");
@@ -108,7 +114,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             CancellationToken cancellationToken = default)
         {
             if (aggregateId == null) throw new ArgumentNullException(nameof(aggregateId));
-            
+
             var logCount = count.HasValue ? $"{count}" : "all";
             _logger.LogTrace("Streaming {Count} event(s) backwards with aggregate Id {Id}", logCount, aggregateId);
             return GetEventSet<TAggregateId, Guid>()
