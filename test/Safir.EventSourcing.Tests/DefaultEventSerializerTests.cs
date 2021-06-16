@@ -35,7 +35,7 @@ namespace Safir.EventSourcing.Tests
                 x => x.GetTypeDiscriminatorAsync(value, It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(type);
 
-            var result = await _eventSerializer.SerializeAsync(id, value);
+            var result = await _eventSerializer.SerializeAsync<Guid, Guid>(id, value);
             
             _metadataProvider.Verify();
             _serializer.Verify(
