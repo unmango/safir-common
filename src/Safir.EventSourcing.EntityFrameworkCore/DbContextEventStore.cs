@@ -27,13 +27,13 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task AddAsync<TAggregateId>(
+        public async Task AddAsync<TAggregateId, TId>(
             TAggregateId aggregateId,
             IEvent @event,
             CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Serializing event {Event}", @event);
-            var serialized = await _serializer.SerializeAsync(aggregateId, @event, cancellationToken);
+            var serialized = await _serializer.SerializeAsync<TAggregateId, TId>(aggregateId, @event, cancellationToken);
             _logger.LogTrace("Serialized event {Event}", @event);
 
             _logger.LogTrace("Adding event {Event}", @event);
@@ -45,13 +45,14 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger.LogTrace("Saved changes asynchronously");
         }
 
-        public async Task AddAsync<TAggregateId>(
+        public async Task AddAsync<TAggregateId, TId>(
             TAggregateId aggregateId,
             IEnumerable<IEvent> events,
             CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Serializing events {Events}", events);
-            var serialized = await events.Select(x => _serializer.SerializeAsync(aggregateId, x, cancellationToken));
+            var serialized = await events.Select(
+                x => _serializer.SerializeAsync<TAggregateId, TId>(aggregateId, x, cancellationToken));
             _logger.LogTrace("Serialized events {Events}", events);
 
             _logger.LogTrace("Adding events {Events}", events);
@@ -63,25 +64,26 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             _logger.LogTrace("Saved changes asynchronously");
         }
 
-        public Task<IEvent> GetAsync<TId>(TId id, CancellationToken cancellationToken = default)
+        public Task<IEvent> GetAsync<TAggregateId, TId>(TId id, CancellationToken cancellationToken = default)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             _logger.LogTrace("Getting single event with id {Id}", id);
-            return GetEventSet<Guid, TId>().SingleAsync(x => id.Equals(x.Id), cancellationToken)
+            return GetEventSet<TAggregateId, TId>().SingleAsync(x => id.Equals(x.Id), cancellationToken)
                 .Bind(x => Deserialize(x, cancellationToken));
         }
 
-        public Task<T> GetAsync<T, TId>(TId id, CancellationToken cancellationToken = default) where T : IEvent
+        public Task<TEvent> GetAsync<TEvent, TAggregateId, TId>(TId id, CancellationToken cancellationToken = default)
+            where TEvent : IEvent
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             _logger.LogTrace("Getting single event with id {Id}", id);
-            return GetEventSet<Guid, TId>().SingleAsync(x => id.Equals(x.Id), cancellationToken)
-                .Bind(x => Deserialize<T, Guid, TId>(x, cancellationToken));
+            return GetEventSet<TAggregateId, TId>().SingleAsync(x => id.Equals(x.Id), cancellationToken)
+                .Bind(x => Deserialize<TEvent, TAggregateId, TId>(x, cancellationToken));
         }
 
-        public IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
+        public IAsyncEnumerable<IEvent> StreamAsync<TAggregateId, TId>(
             TAggregateId aggregateId,
             int startPosition = 0,
             int endPosition = int.MaxValue,
@@ -108,7 +110,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
                 .DeserializeAsync(_serializer, cancellationToken);
         }
 
-        public IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId>(
+        public IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId, TId>(
             TAggregateId aggregateId,
             int? count = null,
             CancellationToken cancellationToken = default)
@@ -136,10 +138,12 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         }
 
         // TODO: Fix order of generic params
-        private Task<T> Deserialize<T, TAggregateId, TId>(Event<TAggregateId, TId> @event, CancellationToken cancellationToken)
-            where T : IEvent
+        private Task<TEvent> Deserialize<TEvent, TAggregateId, TId>(
+            Event<TAggregateId, TId> @event,
+            CancellationToken cancellationToken)
+            where TEvent : IEvent
         {
-            return _serializer.DeserializeAsync<TAggregateId, TId, T>(@event, cancellationToken).AsTask();
+            return _serializer.DeserializeAsync<TAggregateId, TId, TEvent>(@event, cancellationToken).AsTask();
         }
     }
 }
