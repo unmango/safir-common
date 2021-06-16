@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,40 +11,40 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public abstract class EventStore : IEventStore
     {
-        public abstract Task AddAsync<TAggregateId, TId>(
+        public abstract Task AddAsync<TAggregateId>(
             TAggregateId aggregateId,
             IEvent @event,
             CancellationToken cancellationToken = default);
 
-        public virtual Task AddAsync<TAggregateId, TId>(
+        public virtual Task AddAsync<TAggregateId>(
             TAggregateId aggregateId,
             IEnumerable<IEvent> events,
             CancellationToken cancellationToken = default)
         {
-            return Task.WhenAll(events.Select(x => AddAsync<TAggregateId, TId>(aggregateId, x, cancellationToken)));
+            return Task.WhenAll(events.Select(x => AddAsync(aggregateId, x, cancellationToken)));
         }
 
-        public abstract Task<IEvent> GetAsync<TAggregateId, TId>(TId id, CancellationToken cancellationToken = default);
+        public abstract Task<IEvent> GetAsync<TAggregateId>(Guid id, CancellationToken cancellationToken = default);
 
-        public virtual async Task<TEvent> GetAsync<TEvent, TAggregateId, TId>(
-            TId id,
+        public virtual async Task<TEvent> GetAsync<TEvent, TAggregateId>(
+            Guid id,
             CancellationToken cancellationToken = default)
             where TEvent : IEvent
         {
-            return (TEvent)await GetAsync<TAggregateId, TId>(id, cancellationToken);
+            return (TEvent)await GetAsync<TAggregateId>(id, cancellationToken);
         }
 
-        public virtual IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId, TId>(
+        public virtual IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId>(
             TAggregateId aggregateId,
             int? count = null,
             CancellationToken cancellationToken = default)
         {
             // TODO: Swapping start/end is inconsistent in impl. For example the DBContext
             // impl doesn't allow start to be after end
-            return StreamAsync<TAggregateId, TId>(aggregateId, int.MaxValue, count ?? 0, cancellationToken);
+            return StreamAsync(aggregateId, int.MaxValue, count ?? 0, cancellationToken);
         }
 
-        public abstract IAsyncEnumerable<IEvent> StreamAsync<TAggregateId, TId>(
+        public abstract IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
             TAggregateId aggregateId,
             int startPosition = 0,
             int endPosition = int.MaxValue,

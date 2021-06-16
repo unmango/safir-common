@@ -20,23 +20,14 @@ namespace Safir.EventSourcing
             return store.CreateAsync<T, Guid>(@event, cancellationToken);
         }
         
-        public static Task<TAggregate> CreateAsync<TAggregate, TId>(
-            this IEventStore store,
-            IEvent @event,
-            CancellationToken cancellationToken = default)
-            where TAggregate : IAggregate<TId>, new()
-        {
-            return store.CreateAsync<TAggregate, TId, Guid>(@event, cancellationToken);
-        }
-        
-        public static async Task<TAggregate> CreateAsync<TAggregate, TAggregateId, TId>(
+        public static async Task<TAggregate> CreateAsync<TAggregate, TAggregateId>(
             this IEventStore store,
             IEvent @event,
             CancellationToken cancellationToken = default)
             where TAggregate : IAggregate<TAggregateId>, new()
         {
             var aggregate = new TAggregate();
-            await store.AddAsync<TAggregateId, TId>(aggregate.Id, @event, cancellationToken);
+            await store.AddAsync(aggregate.Id, @event, cancellationToken);
             aggregate.Apply(@event);
             return aggregate;
         }
@@ -50,16 +41,7 @@ namespace Safir.EventSourcing
             return store.CreateAsync<T, Guid>(events, cancellationToken);
         }
         
-        public static Task<TAggregate> CreateAsync<TAggregate, TId>(
-            this IEventStore store,
-            IEnumerable<IEvent> events,
-            CancellationToken cancellationToken = default)
-            where TAggregate : IAggregate<TId>, new()
-        {
-            return store.CreateAsync<TAggregate, TId, Guid>(events, cancellationToken);
-        }
-        
-        public static async Task<TAggregate> CreateAsync<TAggregate, TAggregateId, TId>(
+        public static async Task<TAggregate> CreateAsync<TAggregate, TAggregateId>(
             this IEventStore store,
             IEnumerable<IEvent> events,
             CancellationToken cancellationToken = default)
@@ -67,7 +49,7 @@ namespace Safir.EventSourcing
         {
             var aggregate = new TAggregate();
             var list = events.ToList();
-            await store.AddAsync<TAggregateId, TId>(aggregate.Id, list, cancellationToken);
+            await store.AddAsync(aggregate.Id, list, cancellationToken);
             list.ForEach(aggregate.Apply);
             return aggregate;
         }
@@ -78,17 +60,7 @@ namespace Safir.EventSourcing
             CancellationToken cancellationToken = default)
         {
             var id = Guid.NewGuid();
-            await store.AddAsync<Guid, Guid>(id, @event, cancellationToken);
-            return id;
-        }
-
-        public static async Task<Guid> NewAsync<TId>(
-            this IEventStore store,
-            IEvent @event,
-            CancellationToken cancellationToken = default)
-        {
-            var id = Guid.NewGuid();
-            await store.AddAsync<Guid, TId>(id, @event, cancellationToken);
+            await store.AddAsync(id, @event, cancellationToken);
             return id;
         }
 
@@ -98,64 +70,51 @@ namespace Safir.EventSourcing
             CancellationToken cancellationToken = default)
         {
             var id = Guid.NewGuid();
-            await store.AddAsync<Guid, Guid>(id, events, cancellationToken);
+            await store.AddAsync(id, events, cancellationToken);
             return id;
         }
 
-        public static async Task<Guid> NewAsync<TId>(
-            this IEventStore store,
-            IEnumerable<IEvent> events,
-            CancellationToken cancellationToken = default)
-        {
-            var id = Guid.NewGuid();
-            await store.AddAsync<Guid, TId>(id, events, cancellationToken);
-            return id;
-        }
-
-        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId, TId>(
+        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
             this IEventStore store,
             TAggregateId aggregateId,
             CancellationToken cancellationToken)
         {
-            return store.StreamAsync<TAggregateId, TId>(aggregateId, cancellationToken: cancellationToken);
+            return store.StreamAsync(aggregateId, cancellationToken: cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId, TId>(
+        public static IAsyncEnumerable<IEvent> StreamAsync<TAggregateId>(
             this IEventStore store,
             TAggregateId aggregateId,
             int startPosition,
             CancellationToken cancellationToken)
         {
-            return store.StreamAsync<TAggregateId, TId>(aggregateId, startPosition, cancellationToken: cancellationToken);
+            return store.StreamAsync(aggregateId, startPosition, cancellationToken: cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId, TId>(
+        public static IAsyncEnumerable<IEvent> StreamBackwardsAsync<TAggregateId>(
             this IEventStore store,
             TAggregateId aggregateId,
             CancellationToken cancellationToken)
         {
-            return store.StreamBackwardsAsync<TAggregateId, TId>(aggregateId, null, cancellationToken);
+            return store.StreamBackwardsAsync(aggregateId, null, cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamFromAsync<TAggregateId, TId>(
+        public static IAsyncEnumerable<IEvent> StreamFromAsync<TAggregateId>(
             this IEventStore store,
             TAggregateId aggregateId,
             int startPosition,
             CancellationToken cancellationToken = default)
         {
-            return store.StreamAsync<TAggregateId, TId>(aggregateId, startPosition, cancellationToken);
+            return store.StreamAsync(aggregateId, startPosition, cancellationToken);
         }
 
-        public static IAsyncEnumerable<IEvent> StreamUntilAsync<TAggregateId, TId>(
+        public static IAsyncEnumerable<IEvent> StreamUntilAsync<TAggregateId>(
             this IEventStore store,
             TAggregateId aggregateId,
             int endPosition,
             CancellationToken cancellationToken = default)
         {
-            return store.StreamAsync<TAggregateId, TId>(
-                aggregateId,
-                endPosition: endPosition,
-                cancellationToken: cancellationToken);
+            return store.StreamAsync(aggregateId, endPosition: endPosition, cancellationToken: cancellationToken);
         }
     }
 }

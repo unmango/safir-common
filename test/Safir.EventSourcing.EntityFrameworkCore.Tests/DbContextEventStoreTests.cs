@@ -29,7 +29,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             var id = Guid.NewGuid();
             IEvent value = new MockEvent();
             var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
-            _serializer.Setup(x => x.SerializeAsync<Guid, Guid>(id, value, It.IsAny<CancellationToken>()))
+            _serializer.Setup(x => x.SerializeAsync(id, value, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(serialized)
                 .Verifiable();
 
@@ -48,13 +48,13 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             var id = Guid.NewGuid();
             var events = Enumerable.Repeat(new MockEvent(), count).Cast<IEvent>();
             var serialized = new Event(id, "type", Array.Empty<byte>(), DateTime.Now, new Metadata(), 69);
-            _serializer.Setup(x => x.SerializeAsync<Guid, Guid>(id, It.IsAny<IEvent>(), It.IsAny<CancellationToken>()))
+            _serializer.Setup(x => x.SerializeAsync(id, It.IsAny<IEvent>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(serialized);
 
             await _store.AddAsync(id, events);
             
             _serializer.Verify(
-                x => x.SerializeAsync<Guid, Guid>(id, It.IsAny<IEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(count));
+                x => x.SerializeAsync(id, It.IsAny<IEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(count));
             Assert.Contains(serialized, _context.Set<Event>());
         }
 
@@ -67,7 +67,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests
             await _context.AddAsync(serialized with { Metadata = new Metadata() });
             await _context.SaveChangesAsync();
 
-            await _store.GetAsync(entry.Entity.Id);
+            await _store.GetAsync<Guid>(entry.Entity.Id);
             
             _serializer.Verify(x => x.DeserializeAsync(entry.Entity, It.IsAny<CancellationToken>()));
         }

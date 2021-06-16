@@ -8,17 +8,17 @@ namespace Safir.EventSourcing
     [PublicAPI]
     public interface IEventSerializer
     {
-        ValueTask<Event<TAggregateId, TId>> SerializeAsync<TAggregateId, TId>(
+        ValueTask<Event<TAggregateId>> SerializeAsync<TAggregateId>(
             TAggregateId aggregateId,
             IEvent @event,
             CancellationToken cancellationToken = default);
 
-        ValueTask<IEvent> DeserializeAsync<TAggregateId, TId>(
-            Event<TAggregateId, TId> @event,
+        ValueTask<IEvent> DeserializeAsync<TAggregateId>(
+            Event<TAggregateId> @event,
             CancellationToken cancellationToken = default);
 
-        ValueTask<T> DeserializeAsync<TAggregateId, TId, T>(
-            Event<TAggregateId, TId> @event,
+        ValueTask<T> DeserializeAsync<TAggregateId, T>(
+            Event<TAggregateId> @event,
             CancellationToken cancellationToken = default)
             where T : IEvent;
     }

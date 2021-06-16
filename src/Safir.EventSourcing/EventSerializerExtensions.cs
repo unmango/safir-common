@@ -15,40 +15,23 @@ namespace Safir.EventSourcing
             IEvent @event,
             CancellationToken cancellationToken = default)
         {
-            return (Event)await serializer.SerializeAsync<Guid, Guid>(aggregateId, @event, cancellationToken);
-        }
-
-        public static async ValueTask<Event<T>> SerializeAsync<T>(
-            this IEventSerializer serializer,
-            T aggregateId,
-            IEvent @event,
-            CancellationToken cancellationToken = default)
-        {
-            return (Event<T>)await serializer.SerializeAsync<T, Guid>(aggregateId, @event, cancellationToken);
+            return (Event)await serializer.SerializeAsync(aggregateId, @event, cancellationToken);
         }
 
         // TODO: Ensure this doesn't cause ambiguity errors
-        public static ValueTask<Event<TAggregateId, TId>> SerializeAsync<TAggregateId, TId, T>(
+        public static ValueTask<Event<TAggregateId>> SerializeAsync<TAggregateId, T>(
             this IEventSerializer serializer,
             TAggregateId aggregateId,
             T @event,
             CancellationToken cancellationToken = default)
             where T : IEvent
         {
-            return serializer.SerializeAsync<TAggregateId, TId>(aggregateId, @event, cancellationToken);
+            return serializer.SerializeAsync(aggregateId, @event, cancellationToken);
         }
 
         public static ValueTask<IEvent> DeserializeAsync(
             this IEventSerializer serializer,
             Event @event,
-            CancellationToken cancellationToken = default)
-        {
-            return serializer.DeserializeAsync(@event, cancellationToken);
-        }
-
-        public static ValueTask<IEvent> DeserializeAsync<T>(
-            this IEventSerializer serializer,
-            Event<T> @event,
             CancellationToken cancellationToken = default)
         {
             return serializer.DeserializeAsync(@event, cancellationToken);
@@ -60,16 +43,7 @@ namespace Safir.EventSourcing
             CancellationToken cancellationToken = default)
             where T : IEvent
         {
-            return serializer.DeserializeAsync<Guid, Guid, T>(@event, cancellationToken);
-        }
-
-        public static ValueTask<T> DeserializeAsync<TAggregateId, T>(
-            this IEventSerializer serializer,
-            Event<TAggregateId> @event,
-            CancellationToken cancellationToken = default)
-            where T : IEvent
-        {
-            return serializer.DeserializeAsync<TAggregateId, Guid, T>(@event, cancellationToken);
+            return serializer.DeserializeAsync<Guid, T>(@event, cancellationToken);
         }
     }
 }

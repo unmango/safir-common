@@ -50,15 +50,6 @@ namespace Safir.EventSourcing
                 yield return await serializer.DeserializeAsync(@event, cancellationToken);
         }
 
-        public static async IAsyncEnumerable<IEvent> DeserializeAsync<TAggregateId, TId>(
-            this IAsyncEnumerable<Event<TAggregateId, TId>> events,
-            IEventSerializer serializer,
-            [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            await foreach (var @event in events.WithCancellation(cancellationToken))
-                yield return await serializer.DeserializeAsync(@event, cancellationToken);
-        }
-
         public static Metadata GetMetadata<T>(this T @event)
             where T : IEvent
             => new(@event.CorrelationId, @event.CausationId);

@@ -23,7 +23,7 @@ namespace Safir.EventSourcing
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async ValueTask<Event<TAggregateId, TId>> SerializeAsync<TAggregateId, TId>(
+        public async ValueTask<Event<TAggregateId>> SerializeAsync<TAggregateId>(
             TAggregateId aggregateId,
             IEvent @event,
             CancellationToken cancellationToken = default)
@@ -34,7 +34,7 @@ namespace Safir.EventSourcing
             var type = await _metadataProvider.GetTypeDiscriminatorAsync(@event, @event.Version, cancellationToken);
 
             _logger.LogTrace("Constructing serialized event");
-            return new Event<TAggregateId, TId>(
+            return new Event<TAggregateId>(
                 aggregateId,
                 type,
                 data.ToArray(),
@@ -43,8 +43,8 @@ namespace Safir.EventSourcing
                 @event.Version);
         }
 
-        public async ValueTask<IEvent> DeserializeAsync<TAggregateId, TId>(
-            Event<TAggregateId, TId> @event,
+        public async ValueTask<IEvent> DeserializeAsync<TAggregateId>(
+            Event<TAggregateId> @event,
             CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Getting event type from discriminator");
@@ -54,8 +54,8 @@ namespace Safir.EventSourcing
             return (IEvent)await _serializer.DeserializeAsync(type, @event.Data, cancellationToken);
         }
 
-        public ValueTask<T> DeserializeAsync<TAggregateId, TId, T>(
-            Event<TAggregateId, TId> @event,
+        public ValueTask<T> DeserializeAsync<TAggregateId, T>(
+            Event<TAggregateId> @event,
             CancellationToken cancellationToken = default)
             where T : IEvent
         {
