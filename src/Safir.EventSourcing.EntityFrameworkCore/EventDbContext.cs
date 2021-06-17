@@ -13,4 +13,15 @@ namespace Safir.EventSourcing.EntityFrameworkCore
             modelBuilder.ApplyEventConfiguration();
         }
     }
+    
+    public class EventDbContext<T> : DbContext, IEventDbContext<T>
+    {
+        [PublicAPI]
+        public DbSet<Event<T>> Events => Set<Event<T>>();
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyEventConfiguration<T>();
+        }
+    }
 }
