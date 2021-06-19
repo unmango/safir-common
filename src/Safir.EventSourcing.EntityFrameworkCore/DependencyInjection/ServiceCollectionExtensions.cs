@@ -9,6 +9,14 @@ namespace Safir.EventSourcing.EntityFrameworkCore.DependencyInjection
     [PublicAPI]
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddEntityFrameworkEventSourcing(this IServiceCollection services)
+        {
+            services.AddEventSourcing();
+            services.AddEventDbContext();
+            
+            return services;
+        }
+        
         public static IServiceCollection AddEventDbContext(this IServiceCollection services)
             => services.AddEventDbContext(_ => { });
 
@@ -27,6 +35,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.DependencyInjection
         {
             services.AddEventSourcing();
             services.AddScoped<IEventStore, DbContextEventStore<T>>();
+            services.AddScoped<IEventStore<Guid>, DbContextEventStore<T>>();
 
             return services;
         }
