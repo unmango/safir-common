@@ -23,21 +23,21 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests.DependencyInjection
         {
             _services.AddEntityFrameworkEventSourcing();
 
-            Assert.Contains(_services, x => x.ServiceType == typeof(EventDbContext));
+            Assert.Contains(_services, x => x.ServiceType == typeof(EventSourcingContext));
         }
         
         [Fact]
-        public void AddEntityFrameworkEventSourcing_DbContextEventStore()
+        public void AddEntityFrameworkEventSourcing_AddsDbContextEventStore()
         {
             _services.AddEntityFrameworkEventSourcing();
 
             Assert.Contains(_services, x =>
                 x.ServiceType == typeof(IEventStore) &&
-                x.ImplementationType == typeof(DbContextEventStore<EventDbContext>));
+                x.ImplementationType == typeof(DbContextEventStore<EventSourcingContext>));
 
             Assert.Contains(_services, x =>
                 x.ServiceType == typeof(IEventStore<Guid>) &&
-                x.ImplementationType == typeof(DbContextEventStore<EventDbContext>));
+                x.ImplementationType == typeof(DbContextEventStore<EventSourcingContext>));
         }
         
         [Fact]
@@ -49,7 +49,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests.DependencyInjection
         }
         
         [Fact]
-        public void AddEntityFrameworkEventSourcing_Generic_DbContextEventStore()
+        public void AddEntityFrameworkEventSourcing_Generic_AddsDbContextEventStore()
         {
             _services.AddEntityFrameworkEventSourcing<TestContext>();
 
@@ -67,25 +67,25 @@ namespace Safir.EventSourcing.EntityFrameworkCore.Tests.DependencyInjection
         {
             _services.AddDbContextEventStore();
 
-            Assert.Contains(_services, x => x.ServiceType == typeof(EventDbContext));
+            Assert.Contains(_services, x => x.ServiceType == typeof(EventSourcingContext));
         }
         
         [Fact]
-        public void AddDbContextEventStore_DbContextEventStore()
+        public void AddDbContextEventStore_AddsDbContextEventStore()
         {
             _services.AddDbContextEventStore();
 
             Assert.Contains(_services, x =>
                 x.ServiceType == typeof(IEventStore) &&
-                x.ImplementationType == typeof(DbContextEventStore<EventDbContext>));
+                x.ImplementationType == typeof(DbContextEventStore<EventSourcingContext>));
 
             Assert.Contains(_services, x =>
                 x.ServiceType == typeof(IEventStore<Guid>) &&
-                x.ImplementationType == typeof(DbContextEventStore<EventDbContext>));
+                x.ImplementationType == typeof(DbContextEventStore<EventSourcingContext>));
         }
         
         [Fact]
-        public void AddDbContextEventStore_Generic_DbContextEventStore()
+        public void AddDbContextEventStore_Generic_AddsDbContextEventStore()
         {
             _services.AddDbContextEventStore<TestContext>();
 

@@ -33,8 +33,8 @@ namespace Safir.EventSourcing.EntityFrameworkCore.DependencyInjection
             this IServiceCollection services,
             Action<DbContextOptionsBuilder> configure)
         {
-            services.AddDbContext<EventDbContext>(configure);
-            services.AddDbContextEventStore<EventDbContext>();
+            services.AddDbContext<EventSourcingContext>(configure);
+            services.AddDbContextEventStore<EventSourcingContext>();
 
             return services;
         }
