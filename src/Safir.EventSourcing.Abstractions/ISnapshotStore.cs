@@ -12,7 +12,7 @@ namespace Safir.EventSourcing
 
         ValueTask<TAggregate> FindAsync<TAggregate, TId>(
             TId aggregateId,
-            int maxVersion,
+            int maxVersion = int.MaxValue,
             CancellationToken cancellationToken = default)
             where TAggregate : IAggregate<TId>;
     }
