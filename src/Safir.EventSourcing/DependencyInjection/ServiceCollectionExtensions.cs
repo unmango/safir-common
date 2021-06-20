@@ -16,7 +16,7 @@ namespace Safir.EventSourcing.DependencyInjection
             services.AddTransient<IEventMetadataProvider, DefaultEventMetadataProvider>();
             services.AddTransient<IAggregateStore, DefaultAggregateStore>();
             
-            return services;
+            return services.AddTransient<ISafirEventSourcing>();
         }
     }
 }

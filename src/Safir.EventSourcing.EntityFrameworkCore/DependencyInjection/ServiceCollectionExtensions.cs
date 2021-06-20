@@ -12,28 +12,38 @@ namespace Safir.EventSourcing.EntityFrameworkCore.DependencyInjection
         public static IServiceCollection AddEntityFrameworkEventSourcing(this IServiceCollection services)
         {
             services.AddEventSourcing();
-            services.AddEventDbContext();
-            
+            services.AddDbContextEventStore();
+
             return services;
         }
-        
-        public static IServiceCollection AddEventDbContext(this IServiceCollection services)
-            => services.AddEventDbContext(_ => { });
 
-        public static IServiceCollection AddEventDbContext(
+        public static IServiceCollection AddEntityFrameworkEventSourcing<T>(this IServiceCollection services)
+            where T : DbContext
+        {
+            services.AddEventSourcing();
+            services.AddDbContextEventStore<T>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddDbContextEventStore(this IServiceCollection services)
+            => services.AddDbContextEventStore(_ => { });
+
+        public static IServiceCollection AddDbContextEventStore(
             this IServiceCollection services,
             Action<DbContextOptionsBuilder> configure)
         {
             services.AddDbContext<EventDbContext>(configure);
-            services.AddEventDbContext<EventDbContext>();
+            services.AddDbContextEventStore<EventDbContext>();
 
             return services;
         }
 
-        public static IServiceCollection AddEventDbContext<T>(this IServiceCollection services)
+        // TODO: We assume the consumer has already added the DbContext so it can be configured correctly.
+        // This may need to be revisited, because we require it in the event store and it may not exist.
+        public static IServiceCollection AddDbContextEventStore<T>(this IServiceCollection services)
             where T : DbContext
         {
-            services.AddEventSourcing();
             services.AddScoped<IEventStore, DbContextEventStore<T>>();
             services.AddScoped<IEventStore<Guid>, DbContextEventStore<T>>();
 
