@@ -13,7 +13,7 @@ namespace Safir.EventSourcing.EntityFrameworkCore
         public static void ApplyAggregateConfigurations(this ModelBuilder builder, Assembly assembly)
         {
             var aggregateTypes = assembly.DefinedTypes.Where(x =>
-                !IsAggregate(x) &&
+                !IsAggregate(x) && // Just to be sure, also testing
                 x.ImplementedInterfaces.Any(IsAggregate));
 
             foreach (var typeInfo in aggregateTypes)
