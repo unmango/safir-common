@@ -10,10 +10,10 @@ namespace Safir.EventSourcing
         Task AddAsync<TAggregate, TId>(TAggregate aggregate, CancellationToken cancellationToken = default)
             where TAggregate : IAggregate<TId>;
 
-        ValueTask<TAggregate> FindAsync<TAggregate, TId>(
-            TId aggregateId,
+        Task<TAggregate> FindAsync<TAggregate, TId>(
+            TId id,
             int maxVersion = int.MaxValue,
             CancellationToken cancellationToken = default)
-            where TAggregate : IAggregate<TId>;
+            where TAggregate : class, IAggregate<TId>;
     }
 }
