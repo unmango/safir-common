@@ -12,12 +12,16 @@ namespace Safir.EventSourcing.EntityFrameworkCore
     {
         public static void ApplyAggregateConfigurations(this ModelBuilder builder, Assembly assembly)
         {
-            var aggregateTypes = assembly.DefinedTypes.Where(x => x.ImplementedInterfaces.Any(IsAggregate));
+            var aggregateTypes = assembly.DefinedTypes.Where(x =>
+                !IsAggregate(x) &&
+                x.ImplementedInterfaces.Any(IsAggregate));
 
             foreach (var typeInfo in aggregateTypes)
                 ApplyAggregateConfiguration(builder, typeInfo);
 
-            static bool IsAggregate(Type type) => type == typeof(IAggregate<>) || type == typeof(IAggregate);
+            static bool IsAggregate(Type type) =>
+                type == typeof(IAggregate<>) ||
+                type == typeof(IAggregate);
         }
 
         public static void ApplyAggregateConfiguration(this ModelBuilder builder, Type type)
