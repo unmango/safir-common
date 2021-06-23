@@ -17,5 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="Safir.EventSourcing.Tests" />
+  </ItemGroup>
 
 </Project>
