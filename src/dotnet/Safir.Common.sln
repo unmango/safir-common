@@ -4,14 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CC75D772-3E67-4095-9351-DCD6EEF144AD}"
-ProjectSection(SolutionItems) = preProject
-	src\Directory.Build.props = src\Directory.Build.props
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3915209A-D60D-48CA-BEBF-AF19F3F594ED}"
-ProjectSection(SolutionItems) = preProject
-	test\Directory.Build.props = test\Directory.Build.props
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.Common", "src\Safir.Common\Safir.Common.csproj", "{7D9BBDAA-9C15-43A3-BC29-398C5FAB527B}"
 EndProject
@@ -46,6 +46,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.Serialization.Protobuf", "src\Safir.Serialization.Protobuf\Safir.Serialization.Protobuf.csproj", "{EB2866CE-A6C9-4654-9D92-292CE913A2CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.Grpc", "src\Safir.Grpc\Safir.Grpc.csproj", "{F2E84DA2-EDC9-4DF7-97C2-8095199961A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Safir.EventSourcing.Marten", "src\Safir.EventSourcing.Marten\Safir.EventSourcing.Marten.csproj", "{4156F26E-4D07-4546-A1F6-3AB38B4266C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -264,6 +266,18 @@ Global
 		{F2E84DA2-EDC9-4DF7-97C2-8095199961A6}.Release|x64.Build.0 = Release|Any CPU
 		{F2E84DA2-EDC9-4DF7-97C2-8095199961A6}.Release|x86.ActiveCfg = Release|Any CPU
 		{F2E84DA2-EDC9-4DF7-97C2-8095199961A6}.Release|x86.Build.0 = Release|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Debug|x64.Build.0 = Debug|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Debug|x86.Build.0 = Debug|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Release|x64.ActiveCfg = Release|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Release|x64.Build.0 = Release|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7D9BBDAA-9C15-43A3-BC29-398C5FAB527B} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
@@ -283,5 +297,6 @@ Global
 		{9E52A453-0F4C-4D2E-9CE9-73661F97DEFE} = {3915209A-D60D-48CA-BEBF-AF19F3F594ED}
 		{EB2866CE-A6C9-4654-9D92-292CE913A2CA} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
 		{F2E84DA2-EDC9-4DF7-97C2-8095199961A6} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
+		{4156F26E-4D07-4546-A1F6-3AB38B4266C0} = {CC75D772-3E67-4095-9351-DCD6EEF144AD}
 	EndGlobalSection
 EndGlobal
