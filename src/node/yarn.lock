@@ -43,6 +43,8 @@ __metadata:
 "safir@workspace:.":
   version: 0.0.0-use.local
   resolution: "safir@workspace:."
+  dependencies:
+    typescript: ^4.3.5
   languageName: unknown
   linkType: soft
 
