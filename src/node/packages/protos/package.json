@@ -1,0 +1,14 @@
+{
+  "name": "@safir/protos",
+  "scripts": {
+    "build": "run-script-os",
+    "build:windows": "scripts/build.ps1",
+    "build:default": "scripts/build.sh"
+  },
+  "dependencies": {
+    "grpc-web": "^1.2.1"
+  },
+  "devDependencies": {
+    "run-script-os": "^1.1.6"
+  }
+}

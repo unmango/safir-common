@@ -1,3 +1,7 @@
 {
-  "name": "safir-common"
+  "name": "safir",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
 }
