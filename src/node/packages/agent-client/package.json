@@ -1,0 +1,9 @@
+{
+  "name": "@safir/agent-client",
+  "dependencies": {
+    "@safir/protos": "workspace:packages/protos"
+  },
+  "devDependencies": {
+    "typescript": "^4.3.5"
+  }
+}
