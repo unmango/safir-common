@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true
+  }
+}
