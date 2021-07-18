@@ -2,18 +2,21 @@
 
 set -e
 
-DIR="$(git rev-parse --show-toplevel)/protos"
-echo "DIR set to $DIR"
+source $(dirname "$0")/helpers.sh
 
-OUT_DIR="$(readlink -f ./dist)"
-echo "OUT_DIR set to $OUT_DIR"
+DIR="$(git rev-parse --show-toplevel)/protos"
+write "DIR set to $DIR"
+
+OUT_DIR=$(dirname "$0")/../dist
+OUT_DIR=$(readlink -f $OUT_DIR)
+write "OUT_DIR set to $OUT_DIR"
 
 if [ -d "$OUT_DIR" ]; then
-    echo "Removing existing OUT_DIR";
+    write "Removing existing OUT_DIR";
     rm -r $OUT_DIR;
 fi
 
-echo "Creating OUT_DIR";
+write "Creating OUT_DIR";
 mkdir -p $OUT_DIR;
 
 protoc -I=$DIR "$DIR"/**/*.proto \

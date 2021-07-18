@@ -2,19 +2,21 @@
 
 $ErrorActionPreference = "Stop"
 
+Import-Module $PSScriptRoot/helpers.ps1
+
 $DIR = "$(git rev-parse --show-toplevel)"
 $DIR = Join-Path -Path $DIR -ChildPath "protos"
-echo "DIR set to $DIR"
+Write "DIR set to $DIR"
 
-$OUT_DIR = Resolve-Path "./dist"
-echo "OUT_DIR set to $OUT_DIR"
+$OUT_DIR = Resolve-Path "$PSScriptRoot/../dist"
+Write "OUT_DIR set to $OUT_DIR"
 
 if (Test-Path $OUT_DIR) {
-    echo "Removing existing OUT_DIR";
+    Write "Removing existing OUT_DIR";
     rm -r $OUT_DIR;
 }
 
-echo "Creating OUT_DIR";
+Write "Creating OUT_DIR";
 mkdir -p $OUT_DIR;
 
 $FILES = Get-ChildItem -Path $DIR -Recurse -Filter "*.proto" -Name
