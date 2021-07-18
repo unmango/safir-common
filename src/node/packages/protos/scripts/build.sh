@@ -30,7 +30,7 @@ for file in "$OUT_DIR"/**/*; do
     if [ "$(dirname $file)" == "." ]; then
         echo "$file" >> "$OUT_DIR/assets.txt";
     else
-        grep -qxF "$(dirname $file)" "$OUT_DIR/assets.txt" || echo "$(dirname $file)/" >> "$OUT_DIR/assets.txt";
+        grep -qxF "$(dirname $file)/" "$OUT_DIR/assets.txt" || echo "$(dirname $file)/" >> "$OUT_DIR/assets.txt";
     fi
 
     case "${file#*.}" in
