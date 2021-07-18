@@ -2,26 +2,19 @@
 
 set -e
 
-while getopts ":i:o:" opt; do
-  case $opt in
-    i) DIR="$OPTARG"
-    ;;
-    o) OUT_DIR="$OPTARG"
-    ;;
-    \?) echo "Invalid option -$OPTARG" >&2
-    ;;
-  esac
-done
+DIR="$(git rev-parse --show-toplevel)/protos"
+echo "DIR set to $DIR"
 
-if [ ! -d "$DIR" ]; then
-    echo "Input directory '$DIR' doesn't exist" >&2;
-    exit 1;
+OUT_DIR="$(readlink -f ./dist)"
+echo "OUT_DIR set to $OUT_DIR"
+
+if [ -d "$OUT_DIR" ]; then
+    echo "Removing existing OUT_DIR";
+    rm -r $OUT_DIR;
 fi
 
-if [ -z ${OUT_DIR+x} ]; then
-    echo "Output directory not provided" >&2;
-    exit 1;
-fi
+echo "Creating OUT_DIR";
+mkdir -p $OUT_DIR;
 
-protoc -I=$DIR *.proto \
-    --grpc-web_out=import_style=typescript,mode=grpcwebtext:$OUT_DIR
+protoc -I=$DIR "$DIR"/**/*.proto \
+    --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:$OUT_DIR
