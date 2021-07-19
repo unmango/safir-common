@@ -22,30 +22,26 @@ mkdir -p $OUT_DIR;
 protoc -I=$DIR "$DIR"/**/*.proto \
     --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:$OUT_DIR
 
-touch "$OUT_DIR/assets.txt"
-
 for file in "$OUT_DIR"/**/*; do
     file=$(realpath --relative-to="$OUT_DIR" $file);
 
     if [ "$(dirname $file)" == "." ]; then
-        echo "$file" >> "$OUT_DIR/assets.txt";
+        asset $OUT_DIR $file
     else
-        grep -qxF "$(dirname $file)/" "$OUT_DIR/assets.txt" || echo "$(dirname $file)/" >> "$OUT_DIR/assets.txt";
+        asset $OUT_DIR "$(dirname $file)/"
     fi
 
     case "${file#*.}" in
         "d.ts" | "ts")
             echo "export * from './${file%%.*}';" >> "$OUT_DIR/index.d.ts"
-            grep -qxF "index.d.ts" "$OUT_DIR/assets.txt" || echo "index.d.ts" >> "$OUT_DIR/assets.txt"
+            asset $OUT_DIR "index.d.ts";
             ;;
         "js")
             echo "export * from './${file%.*}';" >> "$OUT_DIR/index.js"
-            grep -qxF "index.js" "$OUT_DIR/assets.txt" || echo "index.js" >> "$OUT_DIR/assets.txt"
+            asset $OUT_DIR "index.js";
             ;;
         *)
             echo "Unsupported file extension ${file#*.}"
             ;;
     esac
 done
-
-echo "assets.txt" >> "$OUT_DIR/assets.txt"

@@ -1,11 +1,11 @@
 {
   "name": "@safir/protos",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "run-script-os",
     "build:windows": "scripts/build.ps1",
-    "build:default": "scripts/build.sh",
-    "prepack": "yarn build && mv dist/* .",
-    "postpack": "cat assets.txt | xargs rm -r"
+    "build:default": "scripts/build.sh"
   },
   "dependencies": {
     "grpc-web": "^1.2.1"
