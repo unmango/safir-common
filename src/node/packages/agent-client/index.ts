@@ -1,3 +1,4 @@
 import * as protos from '@safir/protos';
+import * as temp from '@safir/protos/agent';
 
-const temp = new protos.FileSystemClient('hostname', null, null);
+const temp = new protos.agent.FileSystemClient('hostname', null, null);
