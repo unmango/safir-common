@@ -64,11 +64,11 @@ const globAsync = util.promisify(glob.glob);
   write('Executing protocCommand');
   await execAsync(protocCommand);
 
-  write('Collecting directories in outdir');
-  const outDirs = await readAllDirs(outdir);
-  write('Output directories:\n  ' + outDirs.join('\n  '));
+  write('Collecting directories in gendir');
+  const gendirs = await readAllDirs(gendir);
+  write('Output directories:\n  ' + gendirs.join('\n  '));
 
-  for (const dir of outDirs) {
+  for (const dir of gendirs) {
     write('Reading files from ' + dir);
     const files = await fs.readdir(dir);
 
@@ -89,28 +89,36 @@ const globAsync = util.promisify(glob.glob);
     const indexFile = path.join(dir, 'index.ts');
 
     if (dirs.length > 0) {
+      const modules: string[] = [];
+
       for (const nDir of dirs) {
         const fullDir = path.join(dir, nDir);
         const nFiles = await fs.readdir(fullDir);
 
         if (nFiles.length <= 0) continue;
 
-        write('Writing module content to ' + indexFile);
-        await fs.appendFile(indexFile, asExport(nDir, true));
+        modules.push(getModule(nDir));
+        write('Writing module imports to ' + indexFile);
+        await fs.appendFile(indexFile, asImport(nDir, true) + '\n');
       }
+
+      const toExport = modules.join(', ');
+      write('Writing module exports to ' + indexFile);
+      await fs.appendFile(indexFile, `export { ${toExport} };`);
     }
 
     if (code.length > 0) {
       const tsContent = code.map(x => asExport(x)).join('\n') + '\n';
-      write('Writing code content to ' + indexFile);
+      write('Writing code exports to ' + indexFile);
       await fs.appendFile(indexFile, tsContent);
     }
   }
 
-  write('Checking if outdir exists');
-  if (!fsSync.existsSync(outdir)) {
-    write('Creating outdir');
-    await fs.mkdir(outdir);
+  try {
+    write('Executing tsc');
+    await execAsync('tsc');
+  } catch (err) {
+    write(err);
   }
 }());
 
@@ -120,15 +128,27 @@ function write(message: string): void {
   }
 };
 
-function asExport(file: string, asModule = false): string {
-  const module = file
+function getModule(file: string): string {
+  return file
     .replace('.d', '')
     .replace('.ts', '')
     .replace('.js', '');
+}
+
+function asExport(file: string, asModule = false): string {
+  const module = getModule(file);
 
   return asModule
-    ? `export * as ${module} from './${module}'`
+    ? `export * as ${module} from './${module}';`
     : `export * from './${module}';`;
+};
+
+function asImport(file: string, asModule = false): string {
+  const module = getModule(file);
+
+  return asModule
+    ? `import * as ${module} from './${module}';`
+    : `import * from './${module}';`;
 };
 
 async function readAllDirs(dir: string): Promise<string[]> {

@@ -1,7 +1,7 @@
 {
   "name": "@safir/agent-client",
   "scripts": {
-    "build": "tsc **/*.ts"
+    "build": "tsc"
   },
   "dependencies": {
     "@safir/protos": "workspace:packages/protos"
