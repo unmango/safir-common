@@ -18,8 +18,17 @@ const globAsync = util.promisify(glob.glob);
   const indir = path.join(revParse.stdout.trim(), 'protos');
   write('indir: ' + indir);
 
+  const gendir = path.join(cwd, 'generated');
+  write('gendir: ' + gendir);
+
   const outdir = path.join(cwd, 'dist');
   write('outdir: ' + outdir);
+
+  write('Checking if gendir exists');
+  if (fsSync.existsSync(gendir)) {
+    write('Removing gendir');
+    await fs.rm(gendir, { recursive: true });
+  }
 
   write('Checking if outdir exists');
   if (fsSync.existsSync(outdir)) {
@@ -28,9 +37,9 @@ const globAsync = util.promisify(glob.glob);
   }
 
   const webOutOptions = [
-    'import_style=commonjs+dts',
+    'import_style=typescript',
     'mode=grpcwebtext'
-  ].join(',') + ':' + outdir;
+  ].join(',') + ':' + gendir;
   write('webOutOptions: ' + webOutOptions);
 
   write('Collecting input files');
@@ -46,10 +55,10 @@ const globAsync = util.promisify(glob.glob);
   ].join(' ');
   write('protocCommand: ' + protocCommand);
 
-  write('Checking if outdir exists');
-  if (!fsSync.existsSync(outdir)) {
-    write('Creating outdir');
-    await fs.mkdir(outdir);
+  write('Checking if gendir exists');
+  if (!fsSync.existsSync(gendir)) {
+    write('Creating gendir');
+    await fs.mkdir(gendir);
   }
 
   write('Executing protocCommand');
@@ -64,57 +73,44 @@ const globAsync = util.promisify(glob.glob);
     const files = await fs.readdir(dir);
 
     const dirs: string[] = [];
-    const ts: string[] = [];
-    const js: string[] = [];
+    const code: string[] = [];
 
     for (const file of files) {
-      switch (path.extname(file)) {
-        case '.ts':
-          ts.push(file);
-          break;
-        case '.js':
-          js.push(file);
-          break;
-        default:
-          dirs.push(file);
+      const fullPath = path.join(dir, file);
+      const stat = await fs.stat(fullPath);
+
+      if (stat.isFile()) {
+        code.push(file);
+      } else {
+        dirs.push(file);
       }
     }
 
-    const tsIndex = path.join(dir, 'index.d.ts');
-    const jsIndex = path.join(dir, 'index.js');
+    const indexFile = path.join(dir, 'index.ts');
 
     if (dirs.length > 0) {
-      const content = dirs
-        .map(x => asExport(x, true))
-        .join('\n') + '\n';
-
       for (const nDir of dirs) {
         const fullDir = path.join(dir, nDir);
         const nFiles = await fs.readdir(fullDir);
 
         if (nFiles.length <= 0) continue;
 
-        if (nFiles.some(x => path.extname(x) === '.ts')) {
-          write('Writing module content to ' + tsIndex);
-          await fs.appendFile(tsIndex, content);
-        }
-
-        write('Writing module content to ' + jsIndex);
-        await fs.appendFile(jsIndex, content);
+        write('Writing module content to ' + indexFile);
+        await fs.appendFile(indexFile, asExport(nDir, true));
       }
     }
 
-    if (ts.length > 0) {
-      const tsContent = ts.map(x => asExport(x)).join('\n') + '\n';
-      write('Writing ts content to ' + tsIndex);
-      await fs.appendFile(tsIndex, tsContent);
+    if (code.length > 0) {
+      const tsContent = code.map(x => asExport(x)).join('\n') + '\n';
+      write('Writing code content to ' + indexFile);
+      await fs.appendFile(indexFile, tsContent);
     }
+  }
 
-    if (js.length > 0) {
-      const jsContent = js.map(x => asExport(x)).join('\n') + '\n';
-      write('Writing js content to ' + jsIndex);
-      await fs.appendFile(jsIndex, jsContent);
-    }
+  write('Checking if outdir exists');
+  if (!fsSync.existsSync(outdir)) {
+    write('Creating outdir');
+    await fs.mkdir(outdir);
   }
 }());
 
