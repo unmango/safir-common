@@ -62,7 +62,7 @@ const { execAsync, globAsync, write } = util;
   await execAsync(protocCommand);
 
   write('Collecting directories in gendir');
-  const gendirs = await readAllDirs(gendir);
+  const gendirs = await util.readAllDirs(gendir);
   write('Output directories:\n  ' + gendirs.join('\n  '));
 
   for (const dir of gendirs) {
@@ -141,37 +141,3 @@ function asImport(file: string, asModule = false): string {
     ? `import * as ${module} from './${module}';`
     : `import * from './${module}';`;
 };
-
-async function readAllDirs(dir: string): Promise<string[]> {
-  const stat = await fs.stat(dir);
-  if (!stat.isDirectory()) return [];
-
-  const files = await fs.readdir(dir);
-  const result: string[] = [dir];
-
-  for (const file of files) {
-    const fullPath = path.join(dir, file);
-    const nested = await readAllDirs(fullPath);
-    result.push(...nested);
-  }
-
-  return result;
-}
-
-async function readAllFiles(dir: string): Promise<string[]> {
-  const stat = await fs.stat(dir);
-  if (stat.isFile()) return [dir];
-
-  if (!stat.isDirectory()) return [];
-
-  const files = await fs.readdir(dir);
-  const result: string[] = [];
-
-  for (const file of files) {
-    const fullPath = path.join(dir, file);
-    const nested = await readAllFiles(fullPath);
-    result.push(...nested);
-  }
-
-  return result;
-}
