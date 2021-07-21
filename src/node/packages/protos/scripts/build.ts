@@ -1,21 +1,18 @@
 #!/usr/bin/env ts-node
 
-import * as child from 'child_process';
 import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
-import * as glob from 'glob';
 import * as path from 'path';
-import * as util from 'util';
+import * as util from './util';
 
-const execAsync = util.promisify(child.exec);
-const globAsync = util.promisify(glob.glob);
+const { execAsync, globAsync, write } = util;
 
 (async function () {
-  const revParse = await execAsync('git rev-parse --show-toplevel');
   const cwd = process.cwd();
   write('cwd: ' + cwd);
 
-  const indir = path.join(revParse.stdout.trim(), 'protos');
+  const gitRoot = await util.gitRootAsync();
+  const indir = path.join(gitRoot, 'protos');
   write('indir: ' + indir);
 
   const gendir = path.join(cwd, 'generated');
@@ -121,12 +118,6 @@ const globAsync = util.promisify(glob.glob);
     write(err);
   }
 }());
-
-function write(message: string): void {
-  if (process.env.DEBUG) {
-    console.log(message);
-  }
-};
 
 function getModule(file: string): string {
   return file
