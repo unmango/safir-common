@@ -117,6 +117,15 @@ const { execAsync, globAsync, write } = util;
   } catch (err) {
     write(err);
   }
+
+  write('Copying type definitions');
+  const toCopy = await globAsync(path.join(gendir, '**', '*.d.ts'));
+  write('Files to copy:\n' + toCopy.join('\n  '));
+  for (const file of toCopy) {
+    const newFile = file.replace(gendir, outdir);
+    write('Copy:\n  ' + file + '\nto\n  ' + newFile);
+    await fs.copyFile(file, newFile);
+  }
 }());
 
 function getModule(file: string): string {

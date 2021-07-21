@@ -57,6 +57,10 @@ export const readAllFiles = async (dir: string): Promise<string[]> => {
 
 export function write(message: string, ...optionalParams: any[]): void {
   if (process.env.DEBUG) {
-    console.log(message, optionalParams);
+    if (optionalParams.length > 0) {
+      console.log(message, optionalParams);
+    } else {
+      console.log(message);
+    }
   }
 };
