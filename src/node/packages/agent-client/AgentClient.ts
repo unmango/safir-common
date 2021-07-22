@@ -1,13 +1,22 @@
-import { FileSystemClient } from '@safir/protos/dist/agent';
+import { FileSystemClient, HostClient } from './clients';
 
 export default class AgentClient {
 
-  private readonly _baseUrl: string;
-  private readonly _files: FileSystemClient;
+  private readonly _fileSystem: FileSystemClient;
+  private readonly _host: HostClient;
 
   constructor(baseUrl: string) {
-    this._baseUrl = baseUrl;
-    this._files = new FileSystemClient(baseUrl);
+    this._fileSystem = new FileSystemClient(baseUrl);
+    this._host = new HostClient(baseUrl);
+  }
+
+
+  public get fileSystem(): FileSystemClient {
+    return this._fileSystem;
+  }
+
+  public get host(): HostClient {
+    return this._host;
   }
 
 }
