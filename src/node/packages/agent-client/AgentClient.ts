@@ -1,15 +1,16 @@
+import { injectable } from 'tsyringe';
 import { FileSystemClient, HostClient } from './clients';
 
+@injectable()
 export default class AgentClient {
 
   private readonly _fileSystem: FileSystemClient;
   private readonly _host: HostClient;
 
-  constructor(baseUrl: string) {
-    this._fileSystem = new FileSystemClient(baseUrl);
-    this._host = new HostClient(baseUrl);
+  constructor(fileSystem: FileSystemClient, host: HostClient) {
+    this._fileSystem = fileSystem;
+    this._host = host;
   }
-
 
   public get fileSystem(): FileSystemClient {
     return this._fileSystem;
@@ -17,6 +18,10 @@ export default class AgentClient {
 
   public get host(): HostClient {
     return this._host;
+  }
+
+  public static create(baseUrl: string) {
+
   }
 
 }

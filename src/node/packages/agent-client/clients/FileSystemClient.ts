@@ -4,9 +4,7 @@ import { agent } from '@safir/protos';
 
 export default class FileSystemClient {
 
-  private readonly _client = new agent.FileSystemClient(this.baseUrl);
-
-  constructor(private baseUrl: string) { }
+  constructor(private _client: agent.FileSystemClient) { }
 
   public list(): Observable<string> {
     const subject = new Subject<string>();
