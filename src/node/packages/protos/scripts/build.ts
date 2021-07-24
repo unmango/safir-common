@@ -33,11 +33,16 @@ const { execAsync, globAsync, write } = util;
     await fs.rm(outdir, { recursive: true });
   }
 
-  const webOutOptions = [
+  const jsOutOptions = [
+    'import_style=commonjs',
+  ].join(',') + ':' + gendir;
+  write('jsOutOptions: ' + jsOutOptions);
+
+  const grpcWebOutOptions = [
     'import_style=typescript',
     'mode=grpcwebtext'
   ].join(',') + ':' + gendir;
-  write('webOutOptions: ' + webOutOptions);
+  write('grpcWebOutOptions: ' + grpcWebOutOptions);
 
   write('Collecting input files');
   const globbedProtoPath = path.join(indir, '**/*.proto');
@@ -48,7 +53,8 @@ const { execAsync, globAsync, write } = util;
     'protoc',
     '-I=' + indir,
     ...files,
-    '--grpc-web_out=' + webOutOptions
+    '--js_out=' + jsOutOptions,
+    '--grpc-web_out=' + grpcWebOutOptions
   ].join(' ');
   write('protocCommand: ' + protocCommand);
 
@@ -115,11 +121,11 @@ const { execAsync, globAsync, write } = util;
     write('Executing tsc');
     await execAsync('tsc');
   } catch (err) {
-    write(err);
+    console.error(err);
   }
 
   write('Copying type definitions');
-  const toCopy = await globAsync(path.join(gendir, '**', '*.d.ts'));
+  const toCopy = await globAsync(path.join(gendir, '**', '*.{d.ts,js}'));
   write('Files to copy:\n' + toCopy.join('\n  '));
   for (const file of toCopy) {
     const newFile = file.replace(gendir, outdir);
