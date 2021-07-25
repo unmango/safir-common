@@ -1,1 +1,3 @@
 # Most tooling specific ignores are in the .gitignore in their respective folders
+
+.bin/

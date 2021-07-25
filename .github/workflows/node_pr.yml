@@ -18,6 +18,12 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v2
 
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v1
+
+    - name: Install grpc-web plugin
+      run: ./scripts/install-grpc-web.sh
+
     - name: Use Yarn 2
       run: yarn set version berry
 
