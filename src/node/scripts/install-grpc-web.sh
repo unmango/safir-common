@@ -14,4 +14,4 @@ fi
 BIN="$BINDIR/$NAME";
 curl -sSL -o $BIN $URL
 chmod +x $BIN
-export PATH="$PATH:$BINDIR"
+echo "PATH=$PATH:$BINDIR" >> $GITHUB_ENV
