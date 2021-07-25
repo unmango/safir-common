@@ -18,11 +18,9 @@ export function list(baseUrl: string): Observable<string> {
 };
 
 export function listAsync(baseUrl: string): Promise<string[]> {
-  const result = this.list(baseUrl).pipe(
-    toArray(),
-  );
-
-  return firstValueFrom(result, {
-    defaultValue: []
-  });
+  return firstValueFrom(
+    list(baseUrl).pipe(toArray()),
+    {
+      defaultValue: []
+    });
 };
