@@ -662,6 +662,7 @@ __metadata:
     "@safir/protos": "workspace:packages/protos"
     "@types/google-protobuf": ^3
     "@types/jest": ^26.0.24
+    "@types/node": ^16.4.2
     google-protobuf: ^3.17.3
     grpc-web: ^1.2.1
     jest: ^27.0.6
@@ -852,6 +853,13 @@ __metadata:
   version: 16.3.3
   resolution: "@types/node@npm:16.3.3"
   checksum: e597a54070815170d8f541c778900023f2522c27be9c56b2b8411d663da1ef5226f9d16ec158c5d9c84ddcc85551e3d02aa68046aa108b4c6085bc7c95a5bebb
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^16.4.2":
+  version: 16.4.2
+  resolution: "@types/node@npm:16.4.2"
+  checksum: cc67dcab59476bc784d6e72d36de7b380bff38d897f77308a89030bad1703bbd10050d5c4d2233ea080b940ed96990e1f167a9efccc570bdff4add1e75cc047a
   languageName: node
   linkType: hard
 

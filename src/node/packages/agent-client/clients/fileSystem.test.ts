@@ -1,11 +1,39 @@
-import { firstValueFrom } from 'rxjs';
-import { agent } from '@safir/protos';
 import { FileSystemClient } from '@safir/protos/dist/agent';
-import { list, listAsync } from './fileSystem';
+import { createClient, list, listAsync } from './fileSystem';
 
 jest.mock('@safir/protos/dist/agent');
 
 const baseUrl = 'testUrl';
+
+describe('createClient', () => {
+  let mock: MockClientReadableStream<string>;
+  beforeEach(() => {
+    mock = new MockClientReadableStream<string>();
+    (FileSystemClient as jest.Mock).mockImplementation(() => ({
+      list: () => mock,
+    }));
+  });
+
+  test('calls list with baseUrl', () => {
+    const client = createClient(baseUrl);
+
+    client.list();
+
+    expect(FileSystemClient).toHaveBeenCalledWith(baseUrl);
+  });
+
+  test('calls listAsync with baseUrl', async () => {
+    const client = createClient(baseUrl);
+
+    const promise = client.listAsync();
+
+    mock.end();
+
+    await promise;
+
+    expect(FileSystemClient).toHaveBeenCalledWith(baseUrl);
+  });
+});
 
 describe('list', () => {
   let mock: MockClientReadableStream<string>;

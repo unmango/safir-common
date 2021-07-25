@@ -1,10 +1,22 @@
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { firstValueFrom, Observable, Subject, toArray } from 'rxjs';
-import { FileSystemClient } from '@safir/protos/dist/agent';
+import { agent } from '@safir/protos';
 
-const client = (baseUrl: string): FileSystemClient => {
-  return new FileSystemClient(baseUrl);
+export interface FileSystemClient {
+  list(): Observable<string>;
+  listAsync(): Promise<string[]>;
+}
+
+const client = (baseUrl: string): agent.FileSystemClient => {
+  return new agent.FileSystemClient(baseUrl);
 };
+
+export function createClient(baseUrl: string): FileSystemClient {
+  return {
+    list: () => list(baseUrl),
+    listAsync: () => listAsync(baseUrl),
+  };
+}
 
 export function list(baseUrl: string): Observable<string> {
   const subject = new Subject<string>();
