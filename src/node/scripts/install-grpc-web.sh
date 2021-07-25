@@ -3,14 +3,11 @@
 set -e
 
 VER=$(curl -s "https://api.github.com/repos/grpc/grpc-web/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")');
-NAME="protoc-gen-grpc-web-$VER-linux-x86_64";
-URL="https://github.com/grpc/grpc-web/releases/download/$VER/$NAME";
-RELBINDIR="$(dirname $0)/.bin";
-BINDIR="$(realpath $RELBINDIR)";
-BIN="$BINDIR/$NAME";
+URL="https://github.com/grpc/grpc-web/releases/download/$VER/protoc-gen-grpc-web-$VER-linux-x86_64";
+BINDIR="$RUNNER_TOOL_CACHE"
+BIN="$BINDIR/protoc-gen-grpc-web";
 
 echo "VER: $VER"
-echo "NAME: $NAME"
 echo "URL: $URL"
 echo "BINDIR: $BINDIR"
 echo "BIN: $BIN"

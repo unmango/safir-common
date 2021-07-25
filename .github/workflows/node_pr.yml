@@ -19,6 +19,7 @@ jobs:
       uses: actions/setup-node@v2
 
     - name: Install Protoc
+      if: ${{ !env.ACT }}
       uses: arduino/setup-protoc@v1
 
     - name: Install grpc-web plugin
