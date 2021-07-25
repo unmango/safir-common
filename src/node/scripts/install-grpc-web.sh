@@ -8,8 +8,15 @@ URL="https://github.com/grpc/grpc-web/releases/download/$VER/$NAME";
 BINDIR="$(dirname $0)/.bin";
 BIN="$BINDIR/$NAME";
 
+echo "VER: $VER"
+echo "NAME: $NAME"
+echo "URL: $URL"
+echo "BINDIR: $BINDIR"
+echo "BIN: $BIN"
+
 if [ ! -d "$BINDIR" ]; then
-    mkdir $BINDIR;
+    echo "Creating BINDIR"
+    mkdir -p $BINDIR;
 fi
 
 curl -sSL -o $BIN $URL
