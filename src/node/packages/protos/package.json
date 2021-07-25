@@ -6,7 +6,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "ts-node scripts/build.ts",
+    "build": "echo 'building' && ts-node scripts/build.ts",
     "prepack": "yarn build"
   },
   "dependencies": {

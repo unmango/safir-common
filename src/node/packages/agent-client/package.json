@@ -6,7 +6,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "echo 'building' && tsc",
     "test": "jest"
   },
   "dependencies": {
