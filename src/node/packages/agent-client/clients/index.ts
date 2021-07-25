@@ -1,7 +1,7 @@
-import FileSystemClient from './FileSystemClient';
-import HostClient from './HostClient';
+import * as fileSystem from './fileSystem';
+import * as host from './host';
 
 export {
-  FileSystemClient,
-  HostClient,
+  fileSystem,
+  host,
 };
