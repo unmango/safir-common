@@ -1,5 +1,6 @@
 {
   "name": "@safir/agent-client",
+  "version": "0.0.0",
   "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
@@ -14,7 +15,8 @@
   "scripts": {
     "build": "echo 'building' && tsc",
     "test": "jest",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "publish": "yarn version $(minver -t v) && yarn npm publish"
   },
   "dependencies": {
     "@safir/protos": "workspace:packages/protos",
