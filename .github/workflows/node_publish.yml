@@ -45,3 +45,6 @@ jobs:
 
     - name: Run tests
       run: yarn test
+
+    - name: Publish packages
+      run: yarn publish
