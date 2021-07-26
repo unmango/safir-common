@@ -20,6 +20,12 @@ jobs:
         fetch-depth: 0
 
     - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+
+    - name: Install MinVer CLI
+      run: dotnet tool install --global minver-cli
+
+    - name: Setup Node.js
       uses: actions/setup-node@v2
 
     - name: Install Protoc
