@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "echo 'building' && tsc",
-    "test": "jest"
+    "test": "jest",
     "prepack": "yarn build"
   },
   "dependencies": {
