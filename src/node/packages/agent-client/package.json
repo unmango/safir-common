@@ -14,6 +14,7 @@
   "scripts": {
     "build": "echo 'building' && tsc",
     "test": "jest"
+    "prepack": "yarn build"
   },
   "dependencies": {
     "@safir/protos": "workspace:packages/protos",
