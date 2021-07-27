@@ -48,3 +48,5 @@ jobs:
 
     - name: Publish packages
       run: yarn publish
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -15,7 +15,7 @@
   "scripts": {
     "build": "echo 'building' && ts-node scripts/build.ts",
     "prepack": "yarn build",
-    "publish": "yarn version $(minver -t v) && yarn npm publish"
+    "publish": "yarn version $(minver -t v) && yarn npm publish --tag latest --access public"
   },
   "dependencies": {
     "google-protobuf": "^3.17.3",

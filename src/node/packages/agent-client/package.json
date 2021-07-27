@@ -16,7 +16,7 @@
     "build": "echo 'building' && tsc",
     "test": "jest",
     "prepack": "yarn build",
-    "publish": "yarn version $(minver -t v) && yarn npm publish"
+    "publish": "yarn version $(minver -t v) && yarn npm publish --tag latest --access public"
   },
   "dependencies": {
     "@safir/protos": "workspace:packages/protos",
