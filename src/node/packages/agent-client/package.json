@@ -19,7 +19,7 @@
     "publish": "yarn version $(minver -t v) && yarn npm publish --tag latest --access public"
   },
   "dependencies": {
-    "@safir/protos": "workspace:packages/protos",
+    "@unmango/safir-protos": "workspace:packages/protos",
     "google-protobuf": "^3.17.3",
     "grpc-web": "^1.2.1",
     "rxjs": "^7.2.0"
