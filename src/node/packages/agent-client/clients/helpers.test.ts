@@ -1,8 +1,8 @@
 import { isMetadata } from './helpers';
 
 describe('isMetadata', () => {
-  describe('when primitive data returns false', () => {
-    test('number', () => {
+  describe('when primitive type', () => {
+    test('number returns false', () => {
       const result = isMetadata(2);
 
       expect(result).toBeFalsy();
@@ -15,34 +15,42 @@ describe('isMetadata', () => {
     //   expect(result).toBeFalsy();
     // });
 
-    test('string', () => {
+    test('string returns false', () => {
       const result = isMetadata('test');
 
       expect(result).toBeFalsy();
     });
 
-    test('boolean', () => {
+    test('boolean returns false', () => {
       const result = isMetadata(true);
 
       expect(result).toBeFalsy();
     });
 
-    test('symbol', () => {
+    test('symbol returns false', () => {
       const result = isMetadata(Symbol('test'));
 
       expect(result).toBeFalsy();
     });
 
-    test('undefined', () => {
+    test('undefined returns false', () => {
       const result = isMetadata(undefined);
 
       expect(result).toBeFalsy();
     });
 
-    test('null', () => {
+    test('null returns false', () => {
       const result = isMetadata(null);
 
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('when record type', () => {
+    test('returns true', () => {
+      const result = isMetadata({ thing: 'value' });
+
+      expect(result).toBeTruthy();
     });
   });
 });

@@ -14,7 +14,7 @@ export const isMetadata = <T>(response: GrpcResponse<T>): response is Metadata =
   return response
     && !isStatus(response)
     && typeof response === 'object'
-    && Object.values(response).some(x => typeof x !== 'string');
+    && Object.values(response).every(x => typeof x === 'string');
 };
 
 export const isStatus = <T>(response: GrpcResponse<T>): response is Status => {
