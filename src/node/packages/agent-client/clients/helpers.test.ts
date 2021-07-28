@@ -1,6 +1,12 @@
 import { Metadata, Status } from 'grpc-web';
 import { Subject } from 'rxjs';
-import { isMetadata, isStatus, MetadataCallback, responseCallbacks, StatusCallback } from './helpers';
+import {
+  isMetadata,
+  isStatus,
+  MetadataCallback,
+  responseCallbacks,
+  StatusCallback,
+} from './helpers';
 
 describe('isMetadata', () => {
   describe('when primitive type', () => {
@@ -274,10 +280,10 @@ describe('responseCallbacks', () => {
       expect(callback).toHaveBeenCalledTimes(0);
     });
 
-    test('and called with an object that has a string property should invoke callback', () => {
-      const subject = new Subject<Record<string, string>>();
+    test('and called with a metadata object should invoke callback', () => {
+      const subject = new Subject<Metadata>();
       const callback: MetadataCallback = jest.fn();
-      const expected: Record<string, string> = {
+      const expected: Metadata = {
         test: 'test',
       };
 
