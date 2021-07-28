@@ -11,11 +11,14 @@ export interface StatusCallback {
 }
 
 export const isMetadata = <T>(response: GrpcResponse<T>): response is Metadata => {
-  return typeof response !== 'string' && !isStatus(response);
+  return response
+    && !isStatus(response)
+    && typeof response === 'object'
+    && Object.values(response).some(x => typeof x !== 'string');
 };
 
 export const isStatus = <T>(response: GrpcResponse<T>): response is Status => {
-  return typeof response === 'object' && 'code' in response;
+  return response && typeof response === 'object' && 'code' in response;
 };
 
 export const responseCallbacks = <T>(
