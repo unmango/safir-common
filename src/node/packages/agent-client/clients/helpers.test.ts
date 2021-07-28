@@ -1,6 +1,6 @@
-import { Metadata } from 'grpc-web';
+import { Metadata, Status } from 'grpc-web';
 import { Subject } from 'rxjs';
-import { isMetadata, isStatus, MetadataCallback, responseCallbacks } from './helpers';
+import { isMetadata, isStatus, MetadataCallback, responseCallbacks, StatusCallback } from './helpers';
 
 describe('isMetadata', () => {
   describe('when primitive type', () => {
@@ -274,7 +274,7 @@ describe('responseCallbacks', () => {
       expect(callback).toHaveBeenCalledTimes(0);
     });
 
-    test('and called with an object that has a string property should not invoke callback', () => {
+    test('and called with an object that has a string property should invoke callback', () => {
       const subject = new Subject<Record<string, string>>();
       const callback: MetadataCallback = jest.fn();
       const expected: Record<string, string> = {
@@ -282,6 +282,178 @@ describe('responseCallbacks', () => {
       };
 
       const obs = subject.pipe(responseCallbacks(callback));
+
+      obs.subscribe();
+      subject.next(expected);
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith(expected);
+    });
+  });
+
+  describe('when status callback is provided', () => {
+    test('and called with number should not invoke callback', () => {
+      const subject = new Subject<number>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next(69);
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with string should not invoke callback', () => {
+      const subject = new Subject<string>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next('test');
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with boolean should not invoke callback', () => {
+      const subject = new Subject<boolean>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next(true);
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with null should not invoke callback', () => {
+      const subject = new Subject<null>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next(null);
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with undefined should not invoke callback', () => {
+      const subject = new Subject<undefined>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next(undefined);
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with symbol should not invoke callback', () => {
+      const subject = new Subject<Symbol>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next(Symbol('test'));
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with an object that has a number property should not invoke callback', () => {
+      const subject = new Subject<Record<string, number>>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next({ test: 69 });
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with an object that has a boolean property should not invoke callback', () => {
+      const subject = new Subject<Record<string, boolean>>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next({ test: true });
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with an object that has a null property should not invoke callback', () => {
+      const subject = new Subject<Record<string, null>>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next({ test: null });
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with an object that has a undefined property should not invoke callback', () => {
+      const subject = new Subject<Record<string, undefined>>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next({ test: undefined });
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with an object that has a symbol property should not invoke callback', () => {
+      const subject = new Subject<Record<string, Symbol>>();
+      const callback: StatusCallback = jest.fn();
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next({ test: Symbol('test') });
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with an object that has a string property should not invoke callback', () => {
+      const subject = new Subject<Record<string, string>>();
+      const callback: StatusCallback = jest.fn();
+      const expected: Record<string, string> = {
+        test: 'test',
+      };
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next(expected);
+      expect(callback).toHaveBeenCalledTimes(0);
+    });
+
+    test('and called with a status should invoke callback', () => {
+      const subject = new Subject<Status>();
+      const callback: StatusCallback = jest.fn();
+      const expected: Status = {
+        code: 69,
+        details: 'details',
+      };
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
+
+      obs.subscribe();
+      subject.next(expected);
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith(expected);
+    });
+
+    test('and called with a status with metadata should invoke callback', () => {
+      const subject = new Subject<Status>();
+      const callback: StatusCallback = jest.fn();
+      const expected: Status = {
+        code: 69,
+        details: 'details',
+        metadata: {
+          test: 'test',
+        },
+      };
+
+      const obs = subject.pipe(responseCallbacks(undefined, callback));
 
       obs.subscribe();
       subject.next(expected);
