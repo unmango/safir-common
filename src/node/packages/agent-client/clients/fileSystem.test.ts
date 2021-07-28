@@ -51,7 +51,7 @@ describe('list', () => {
 
     const observable = list(baseUrl);
     observable.subscribe({
-      next: x => result = x,
+      next: x => result = x as string,
       error: e => error = e,
       complete: () => completed = true,
     });
@@ -71,7 +71,7 @@ describe('list', () => {
 
     const observable = list(baseUrl);
     observable.subscribe({
-      next: x => result = x,
+      next: x => result = x as string,
       error: e => error = e,
       complete: () => completed = true,
     });
@@ -91,7 +91,7 @@ describe('list', () => {
 
     const observable = list(baseUrl);
     observable.subscribe({
-      next: x => result = x,
+      next: x => result = x as string,
       error: e => error = e,
       complete: () => completed = true,
     });
