@@ -18,7 +18,10 @@ export const isMetadata = <T>(response: GrpcResponse<T>): response is Metadata =
 };
 
 export const isStatus = <T>(response: GrpcResponse<T>): response is Status => {
-  return response && typeof response === 'object' && 'code' in response;
+  return response
+    && typeof response === 'object'
+    && 'code' in response
+    && 'details' in response;
 };
 
 export const responseCallbacks = <T>(
