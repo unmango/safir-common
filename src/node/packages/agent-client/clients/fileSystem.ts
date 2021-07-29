@@ -3,6 +3,7 @@ import { filter, firstValueFrom, Observable, Subject, toArray } from 'rxjs';
 import { agent } from '@unmango/safir-protos';
 import { GrpcResponse } from '../grpcResponse';
 import { MetadataCallback, responseCallbacks, StatusCallback } from './helpers';
+import { Metadata, Status } from 'grpc-web';
 
 export interface FileSystemClient {
   list(): Observable<GrpcResponse<string>>;
@@ -20,16 +21,24 @@ export function createClient(baseUrl: string): FileSystemClient {
   };
 }
 
+export function list(baseUrl: string): Observable<GrpcResponse<string>>;
+export function list(baseUrl: string, status: StatusCallback): Observable<Metadata | string>;
+export function list(baseUrl: string, metadata: MetadataCallback, status?: StatusCallback): Observable<string>;
 export function list(
   baseUrl: string,
-  metadata?: MetadataCallback,
+  either?: MetadataCallback | StatusCallback,
   status?: StatusCallback): Observable<GrpcResponse<string>> {
   const subject = new Subject<GrpcResponse<string>>();
   const stream = client(baseUrl).list(new Empty());
+  let metadata: MetadataCallback = _ => { };
+
+  if (status) {
+
+  }
 
   stream.on('data', x => subject.next(x as string));
   stream.on('metadata', x => {
-    if (metadata) metadata(x);
+    if (either) either(x);
     else subject.next(x);
   });
   stream.on('status', x => {
