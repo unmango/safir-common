@@ -1,4 +1,6 @@
 import { FileSystemClient } from '@unmango/safir-protos/dist/agent';
+import { Observer } from 'rxjs';
+import { GrpcResponse } from '../grpcResponse';
 import { createClient, list, listAsync } from './fileSystem';
 
 jest.mock('@unmango/safir-protos/dist/agent');
@@ -36,71 +38,56 @@ describe('createClient', () => {
 });
 
 describe('list', () => {
-  let mock: MockClientReadableStream<string>;
+  let mockStream: MockClientReadableStream<string>;
+  let mockObserver: Observer<GrpcResponse<string>>;
   beforeEach(() => {
-    mock = new MockClientReadableStream<string>();
+    mockStream = new MockClientReadableStream<string>();
     (FileSystemClient as jest.Mock).mockImplementation(() => ({
-      list: () => mock,
+      list: () => mockStream,
     }));
+
+    mockObserver = {
+      next: jest.fn(),
+      error: jest.fn(),
+      complete: jest.fn(),
+    };
   });
 
   test('completes observable when no data', () => {
-    let result: string | null = null;
-    let error: Error | null = null;
-    let completed = false;
-
     const observable = list(baseUrl);
-    observable.subscribe({
-      next: x => result = x as string,
-      error: e => error = e,
-      complete: () => completed = true,
-    });
+    observable.subscribe(mockObserver);
 
-    mock.end();
+    mockStream.end();
 
-    expect(result).toBeNull();
-    expect(error).toBeNull();
-    expect(completed).toBeTruthy();
+    expect(mockObserver.next).not.toHaveBeenCalled();
+    expect(mockObserver.error).not.toHaveBeenCalled();
+    expect(mockObserver.complete).toHaveBeenCalled();
   });
 
   test('calls error when error occurrs', () => {
-    let result: string | null = null;
-    let error: Error | null = null;
-    let completed = false;
     const expectedError = new Error();
 
     const observable = list(baseUrl);
-    observable.subscribe({
-      next: x => result = x as string,
-      error: e => error = e,
-      complete: () => completed = true,
-    });
+    observable.subscribe(mockObserver);
 
-    mock.error(expectedError);
+    mockStream.error(expectedError);
 
-    expect(result).toBeNull();
-    expect(completed).toBeFalsy();
-    expect(error).toBe(expectedError);
+    expect(mockObserver.next).not.toHaveBeenCalled();
+    expect(mockObserver.complete).not.toHaveBeenCalled();
+    expect(mockObserver.error).toHaveBeenCalledWith(expectedError);
   });
 
   test('calls next when data is received', () => {
-    let result: string | null = null;
-    let error: Error | null = null;
-    let completed = false;
     const expectedResult = 'data';
 
     const observable = list(baseUrl);
-    observable.subscribe({
-      next: x => result = x as string,
-      error: e => error = e,
-      complete: () => completed = true,
-    });
+    observable.subscribe(mockObserver);
 
-    mock.data(expectedResult);
+    mockStream.data(expectedResult);
 
-    expect(error).toBeNull();
-    expect(completed).toBeFalsy();
-    expect(result).toBe(expectedResult);
+    expect(mockObserver.error).not.toHaveBeenCalled();
+    expect(mockObserver.complete).not.toHaveBeenCalled();
+    expect(mockObserver.next).toHaveBeenCalledWith(expectedResult);
   });
 });
 
