@@ -1,16 +1,18 @@
 import { FileSystemClient } from '@unmango/safir-protos/dist/agent';
+import { Metadata, Status } from 'grpc-web';
 import { Observer } from 'rxjs';
 import { GrpcResponse } from '../grpcResponse';
 import { createClient, list, listAsync } from './fileSystem';
+import { MetadataCallback, StatusCallback } from './helpers';
 
 jest.mock('@unmango/safir-protos/dist/agent');
 
 const baseUrl = 'testUrl';
 
 describe('createClient', () => {
-  let mock: MockClientReadableStream<string>;
+  let mock: MockClientReadableStream<GrpcResponse<string>>;
   beforeEach(() => {
-    mock = new MockClientReadableStream<string>();
+    mock = new MockClientReadableStream<GrpcResponse<string>>();
     (FileSystemClient as jest.Mock).mockImplementation(() => ({
       list: () => mock,
     }));
@@ -35,13 +37,46 @@ describe('createClient', () => {
 
     expect(FileSystemClient).toHaveBeenCalledWith(baseUrl);
   });
+
+  test('calls listAsync with metadata callback', async () => {
+    const client = createClient(baseUrl);
+    const callback: MetadataCallback = jest.fn();
+    const expected: Metadata = { test: 'test' };
+
+    const promise = client.listAsync(callback);
+
+    mock.data(expected);
+    mock.end();
+
+    await promise;
+
+    expect(callback).toHaveBeenCalledWith(expected);
+  });
+
+  test('calls listAsync with status callback', async () => {
+    const client = createClient(baseUrl);
+    const callback: StatusCallback = jest.fn();
+    const expected: Status = {
+      code: 420,
+      details: 'blaze',
+    };
+
+    const promise = client.listAsync(undefined, callback);
+
+    mock.data(expected);
+    mock.end();
+
+    await promise;
+
+    expect(callback).toHaveBeenCalledWith(expected);
+  });
 });
 
 describe('list', () => {
-  let mockStream: MockClientReadableStream<string>;
+  let mockStream: MockClientReadableStream<GrpcResponse<string>>;
   let mockObserver: Observer<GrpcResponse<string>>;
   beforeEach(() => {
-    mockStream = new MockClientReadableStream<string>();
+    mockStream = new MockClientReadableStream<GrpcResponse<string>>();
     (FileSystemClient as jest.Mock).mockImplementation(() => ({
       list: () => mockStream,
     }));
@@ -88,6 +123,72 @@ describe('list', () => {
     expect(mockObserver.error).not.toHaveBeenCalled();
     expect(mockObserver.complete).not.toHaveBeenCalled();
     expect(mockObserver.next).toHaveBeenCalledWith(expectedResult);
+  });
+
+  test('calls next when metadata is received', () => {
+    const expectedResult: Metadata = {
+      test: 'test',
+    };
+
+    const observable = list(baseUrl);
+    observable.subscribe(mockObserver);
+
+    mockStream.data(expectedResult);
+
+    expect(mockObserver.error).not.toHaveBeenCalled();
+    expect(mockObserver.complete).not.toHaveBeenCalled();
+    expect(mockObserver.next).toHaveBeenCalledWith(expectedResult);
+  });
+
+  test('calls next when status is received', () => {
+    const expectedResult: Status = {
+      code: 69,
+      details: 'immaturity',
+    };
+
+    const observable = list(baseUrl);
+    observable.subscribe(mockObserver);
+
+    mockStream.data(expectedResult);
+
+    expect(mockObserver.error).not.toHaveBeenCalled();
+    expect(mockObserver.complete).not.toHaveBeenCalled();
+    expect(mockObserver.next).toHaveBeenCalledWith(expectedResult);
+  });
+
+  test('invokes callback when metadata is received', () => {
+    const callback: MetadataCallback = jest.fn();
+    const expectedResult: Metadata = {
+      test: 'test',
+    };
+
+    const observable = list(baseUrl, callback);
+    observable.subscribe(mockObserver);
+
+    mockStream.metadata(expectedResult);
+
+    expect(mockObserver.error).not.toHaveBeenCalled();
+    expect(mockObserver.complete).not.toHaveBeenCalled();
+    expect(mockObserver.next).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(expectedResult);
+  });
+
+  test('invokes callback when status is received', () => {
+    const callback: StatusCallback = jest.fn();
+    const expectedResult: Status = {
+      code: 1995,
+      details: 'birthday',
+    };
+
+    const observable = list(baseUrl, undefined, callback);
+    observable.subscribe(mockObserver);
+
+    mockStream.status(expectedResult);
+
+    expect(mockObserver.error).not.toHaveBeenCalled();
+    expect(mockObserver.complete).not.toHaveBeenCalled();
+    expect(mockObserver.next).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(expectedResult);
   });
 });
 
@@ -153,16 +254,26 @@ describe('listAsync', () => {
 class MockClientReadableStream<T> {
 
   data: (response: T) => void = _ => { };
+  metadata: (metadata: Metadata) => void = _ => { };
+  status: (status: Status) => void = _ => { };
   error: (error: Error) => void = _ => { };
   end: () => void = () => { };
 
   on(eventType: 'data', callback: (response: T) => void): void;
+  on(eventType: 'metadata', callback: (metadata: Metadata) => void): void;
+  on(eventType: 'status', callback: (status: Status) => void): void;
   on(eventType: 'error', callback: (error: Error) => void): void;
   on(eventType: 'end', callback: () => void): void;
   on(eventType: string, callback: (r?: any) => void) {
     switch (eventType) {
       case 'data':
         this.data = callback;
+        break;
+      case 'metadata':
+        this.metadata = callback;
+        break;
+      case 'status':
+        this.status = callback;
         break;
       case 'error':
         this.error = callback;
