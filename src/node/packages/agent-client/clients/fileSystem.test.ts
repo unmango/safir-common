@@ -45,7 +45,7 @@ describe('createClient', () => {
 
     const promise = client.listAsync(callback);
 
-    mock.data(expected);
+    mock.metadata(expected);
     mock.end();
 
     await promise;
@@ -63,7 +63,7 @@ describe('createClient', () => {
 
     const promise = client.listAsync(undefined, callback);
 
-    mock.data(expected);
+    mock.status(expected);
     mock.end();
 
     await promise;

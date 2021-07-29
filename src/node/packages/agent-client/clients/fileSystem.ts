@@ -47,8 +47,7 @@ export function listAsync(
   metadata: MetadataCallback = _ => { },
   status: StatusCallback = _ => { }): Promise<string[]> {
   return firstValueFrom(
-    list(baseUrl).pipe(
-      responseCallbacks(metadata, status),
+    list(baseUrl, metadata, status).pipe(
       filter((x): x is string => typeof x === 'string'),
       toArray(),
     ),
