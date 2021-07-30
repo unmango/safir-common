@@ -43,7 +43,7 @@ describe('createClient', () => {
     const callback: MetadataCallback = jest.fn();
     const expected: Metadata = { test: 'test' };
 
-    const promise = client.listAsync(callback);
+    const promise = client.listAsync({ metadata: callback });
 
     mock.metadata(expected);
     mock.end();
@@ -61,7 +61,7 @@ describe('createClient', () => {
       details: 'blaze',
     };
 
-    const promise = client.listAsync(undefined, callback);
+    const promise = client.listAsync({ status: callback });
 
     mock.status(expected);
     mock.end();
@@ -162,7 +162,7 @@ describe('list', () => {
       test: 'test',
     };
 
-    const observable = list(baseUrl, callback);
+    const observable = list(baseUrl, { metadata: callback });
     observable.subscribe(mockObserver);
 
     mockStream.metadata(expectedResult);
@@ -180,7 +180,7 @@ describe('list', () => {
       details: 'birthday',
     };
 
-    const observable = list(baseUrl, undefined, callback);
+    const observable = list(baseUrl, { status: callback });
     observable.subscribe(mockObserver);
 
     mockStream.status(expectedResult);

@@ -10,6 +10,11 @@ export interface StatusCallback {
   (status: Status): void;
 }
 
+export interface ResponseCallbacks {
+  metadata?: MetadataCallback;
+  status?: StatusCallback;
+}
+
 export const isMetadata = <T>(response: GrpcResponse<T>): response is Metadata => {
   return response
     && !isStatus(response)
@@ -25,14 +30,18 @@ export const isStatus = <T>(response: GrpcResponse<T>): response is Status => {
 };
 
 export const responseCallbacks = <T>(
-  metadata: MetadataCallback = _ => { },
-  status: StatusCallback = _ => { }): OperatorFunction<T, T> => {
+  { status, metadata }: ResponseCallbacks
+): OperatorFunction<T, T> => {
   return pipe(
     tap(x => {
-      if (isStatus(x)) status(x);
+      if (status && isStatus(x)) {
+        status(x);
+      }
     }),
     tap(x => {
-      if (isMetadata(x)) metadata(x);
+      if (metadata && isMetadata(x)) {
+        metadata(x);
+      }
     }),
   );
 };

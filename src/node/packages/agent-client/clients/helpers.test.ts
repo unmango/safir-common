@@ -163,7 +163,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<number>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next(69);
@@ -174,7 +174,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<string>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next('test');
@@ -185,7 +185,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<boolean>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next(true);
@@ -196,7 +196,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<null>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next(null);
@@ -207,7 +207,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<undefined>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next(undefined);
@@ -218,7 +218,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Symbol>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next(Symbol('test'));
@@ -229,7 +229,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, number>>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next({ test: 69 });
@@ -240,7 +240,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, boolean>>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next({ test: true });
@@ -251,7 +251,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, null>>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next({ test: null });
@@ -262,7 +262,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, undefined>>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next({ test: undefined });
@@ -273,7 +273,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, Symbol>>();
       const callback: MetadataCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next({ test: Symbol('test') });
@@ -287,7 +287,7 @@ describe('responseCallbacks', () => {
         test: 'test',
       };
 
-      const obs = subject.pipe(responseCallbacks(callback));
+      const obs = subject.pipe(responseCallbacks({ metadata: callback }));
 
       obs.subscribe();
       subject.next(expected);
@@ -301,7 +301,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<number>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(69);
@@ -312,7 +312,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<string>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next('test');
@@ -323,7 +323,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<boolean>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(true);
@@ -334,7 +334,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<null>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(null);
@@ -345,7 +345,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<undefined>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(undefined);
@@ -356,7 +356,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Symbol>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(Symbol('test'));
@@ -367,7 +367,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, number>>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next({ test: 69 });
@@ -378,7 +378,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, boolean>>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next({ test: true });
@@ -389,7 +389,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, null>>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next({ test: null });
@@ -400,7 +400,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, undefined>>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next({ test: undefined });
@@ -411,7 +411,7 @@ describe('responseCallbacks', () => {
       const subject = new Subject<Record<string, Symbol>>();
       const callback: StatusCallback = jest.fn();
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next({ test: Symbol('test') });
@@ -425,7 +425,7 @@ describe('responseCallbacks', () => {
         test: 'test',
       };
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(expected);
@@ -440,7 +440,7 @@ describe('responseCallbacks', () => {
         details: 'details',
       };
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(expected);
@@ -459,7 +459,7 @@ describe('responseCallbacks', () => {
         },
       };
 
-      const obs = subject.pipe(responseCallbacks(undefined, callback));
+      const obs = subject.pipe(responseCallbacks({ status: callback }));
 
       obs.subscribe();
       subject.next(expected);
