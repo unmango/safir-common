@@ -7,6 +7,9 @@ import { Metadata, Status } from 'grpc-web';
 
 export interface FileSystemClient {
   list(): Observable<GrpcResponse<string>>;
+  list(callbacks: { metadata: MetadataCallback; }): Observable<Status | string>;
+  list(callbacks: { status: StatusCallback; }): Observable<Metadata | string>;
+  list(callbacks: { metadata: MetadataCallback, status: StatusCallback; }): Observable<string>;
   listAsync(callbacks?: ResponseCallbacks): Promise<string[]>;
 }
 
@@ -16,7 +19,7 @@ const client = (baseUrl: string): agent.FileSystemClient => {
 
 export function createClient(baseUrl: string): FileSystemClient {
   return {
-    list: () => list(baseUrl),
+    list: (callbacks?: ResponseCallbacks) => list(baseUrl),
     listAsync: (c) => listAsync(baseUrl, c),
   };
 }
