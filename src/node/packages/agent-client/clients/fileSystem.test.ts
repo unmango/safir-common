@@ -12,7 +12,7 @@ describe('createClient', () => {
 
     client.list();
 
-    expect(list).toHaveBeenCalledWith(baseUrl, undefined);
+    expect(list).toHaveBeenCalledWith(baseUrl, undefined, undefined);
   });
 
   test('calls listAsync with metadata callback', async () => {
@@ -21,7 +21,7 @@ describe('createClient', () => {
 
     client.list(expected);
 
-    expect(list).toHaveBeenCalledWith(baseUrl, expected);
+    expect(list).toHaveBeenCalledWith(baseUrl, expected, undefined);
   });
 
   test('calls list with status callback', async () => {
@@ -30,7 +30,7 @@ describe('createClient', () => {
 
     client.list(expected);
 
-    expect(list).toHaveBeenCalledWith(baseUrl, expected);
+    expect(list).toHaveBeenCalledWith(baseUrl, expected, undefined);
   });
 
   test('calls list with callbacks', async () => {
@@ -42,7 +42,7 @@ describe('createClient', () => {
 
     client.list(expected);
 
-    expect(list).toHaveBeenCalledWith(baseUrl, expected);
+    expect(list).toHaveBeenCalledWith(baseUrl, expected, undefined);
   });
 
   test('calls listAsync with baseUrl', async () => {
@@ -50,7 +50,7 @@ describe('createClient', () => {
 
     await client.listAsync();
 
-    expect(listAsync).toHaveBeenCalledWith(baseUrl, undefined);
+    expect(listAsync).toHaveBeenCalledWith(baseUrl, undefined, undefined);
   });
 
   test('calls listAsync with metadata callback', async () => {
@@ -59,7 +59,7 @@ describe('createClient', () => {
 
     await client.listAsync(expected);
 
-    expect(listAsync).toHaveBeenCalledWith(baseUrl, expected);
+    expect(listAsync).toHaveBeenCalledWith(baseUrl, expected, undefined);
   });
 
   test('calls listAsync with status callback', async () => {
@@ -68,7 +68,7 @@ describe('createClient', () => {
 
     await client.listAsync(expected);
 
-    expect(listAsync).toHaveBeenCalledWith(baseUrl, expected);
+    expect(listAsync).toHaveBeenCalledWith(baseUrl, expected, undefined);
   });
 
   test('calls listAsync with callbacks', async () => {
@@ -80,6 +80,6 @@ describe('createClient', () => {
 
     await client.listAsync(expected);
 
-    expect(listAsync).toHaveBeenCalledWith(baseUrl, expected);
+    expect(listAsync).toHaveBeenCalledWith(baseUrl, expected, undefined);
   });
 });
