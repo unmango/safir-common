@@ -26,7 +26,7 @@ describe('list', () => {
     };
   });
 
-  test('creates client with credentials', () => {
+  test('calls list with credentials', () => {
     const expected = { user: 'unmango' };
 
     list(baseUrl, undefined, expected);

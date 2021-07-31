@@ -7,6 +7,15 @@ jest.mock('./list');
 const baseUrl = 'testUrl';
 
 describe('listAsync', () => {
+  test('calls list with credentials', async () => {
+    (list as jest.Mock).mockReturnValue(from(''));
+    const expected = { user: 'unmango' };
+
+    await listAsync(baseUrl, undefined, expected);
+
+    expect(list).toHaveBeenCalledWith(baseUrl, undefined, expected);
+  });
+
   test('returns empty array when no data', async () => {
     (list as jest.Mock).mockReturnValue(EMPTY);
 
