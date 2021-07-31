@@ -15,6 +15,15 @@ describe('createClient', () => {
     expect(list).toHaveBeenCalledWith(baseUrl, undefined, undefined);
   });
 
+  test('calls list with credentials', () => {
+    const expected = { user: 'unmango' };
+    const client = createClient(baseUrl, expected);
+
+    client.list();
+
+    expect(list).toHaveBeenCalledWith(baseUrl, undefined, expected);
+  });
+
   test('calls listAsync with metadata callback', async () => {
     const client = createClient(baseUrl);
     const expected = { metadata: jest.fn() };
