@@ -12,6 +12,7 @@ const baseUrl = 'testUrl';
 describe('list', () => {
   let mockStream: MockClientReadableStream<string>;
   let mockObserver: Observer<string>;
+
   beforeEach(() => {
     mockStream = new MockClientReadableStream<string>();
     (FileSystemClient as jest.Mock).mockImplementation(() => ({
@@ -23,6 +24,14 @@ describe('list', () => {
       error: jest.fn(),
       complete: jest.fn(),
     };
+  });
+
+  test('creates client with credentials', () => {
+    const expected = { user: 'unmango' };
+
+    list(baseUrl, undefined, expected);
+
+    expect(FileSystemClient).toHaveBeenCalledWith(baseUrl, expected);
   });
 
   test('completes observable when no data', () => {

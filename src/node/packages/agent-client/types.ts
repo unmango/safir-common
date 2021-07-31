@@ -1,5 +1,7 @@
 import { Metadata, Status } from 'grpc-web';
 
+export type Credentials = Record<string, string>;
+
 export interface MetadataCallback {
   (metadata: Metadata): void;
 }
