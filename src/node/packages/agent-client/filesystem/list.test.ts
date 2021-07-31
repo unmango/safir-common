@@ -31,7 +31,15 @@ describe('list', () => {
 
     list(baseUrl, undefined, expected);
 
-    expect(FileSystemClient).toHaveBeenCalledWith(baseUrl, expected);
+    expect(FileSystemClient).toHaveBeenCalledWith(baseUrl, expected, undefined);
+  });
+
+  test('calls list with options', () => {
+    const expected = { something: 'option' };
+
+    list(baseUrl, undefined, undefined, expected);
+
+    expect(FileSystemClient).toHaveBeenCalledWith(baseUrl, undefined, expected);
   });
 
   test('completes observable when no data', () => {

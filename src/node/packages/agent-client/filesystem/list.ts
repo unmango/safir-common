@@ -3,22 +3,17 @@ import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Observable, Subject } from 'rxjs';
 import { Credentials, ResponseCallbacks } from '../types';
 
-const client = (
-  baseUrl: string,
-  credentials?: Credentials
-): FileSystemClient => {
-  return new FileSystemClient(baseUrl, credentials);
-};
-
 export function list(
   baseUrl: string,
   callbacks?: ResponseCallbacks,
   credentials?: Credentials,
+  options?: Record<string, unknown>,
 ): Observable<string> {
   const subject = new Subject<string>();
-  const stream = client(
+  const stream = new FileSystemClient(
     baseUrl,
-    credentials
+    credentials,
+    options,
   ).list(new Empty());
 
   if (callbacks?.metadata) {
