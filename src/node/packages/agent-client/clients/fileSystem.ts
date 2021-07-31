@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { list, listAsync } from '../filesystem';
-import { ResponseCallbacks } from './helpers';
+import { ResponseCallbacks } from '../types';
 
 export interface FileSystemClient {
   list(callbacks?: ResponseCallbacks): Observable<string>;

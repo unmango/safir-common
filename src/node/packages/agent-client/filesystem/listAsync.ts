@@ -1,5 +1,5 @@
 import { firstValueFrom, toArray } from 'rxjs';
-import { ResponseCallbacks } from '../clients/helpers';
+import { ResponseCallbacks } from '../types';
 import { list } from './list';
 
 export function listAsync(
@@ -8,5 +8,6 @@ export function listAsync(
 ): Promise<string[]> {
   return firstValueFrom(
     list(baseUrl, callbacks).pipe(toArray()),
-    { defaultValue: [] });
+    { defaultValue: [] },
+  );
 };

@@ -1,7 +1,7 @@
 import { FileSystemClient } from '@unmango/safir-protos/dist/agent';
 import { Metadata, Status } from 'grpc-web';
 import { Observer } from 'rxjs';
-import { MetadataCallback, StatusCallback } from '../clients/helpers';
+import { MetadataCallback, StatusCallback } from '../types';
 import { MockClientReadableStream } from '../util';
 import { list } from './list';
 

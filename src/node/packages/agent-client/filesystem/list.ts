@@ -1,7 +1,7 @@
 import { FileSystemClient } from '@unmango/safir-protos/dist/agent';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Observable, Subject } from 'rxjs';
-import { ResponseCallbacks } from '../clients/helpers';
+import { ResponseCallbacks } from '../types';
 
 const client = (baseUrl: string): FileSystemClient => {
   return new FileSystemClient(baseUrl);
