@@ -870,6 +870,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@unmango/safir-agent-client-e2e@workspace:packages/agent-client-e2e":
+  version: 0.0.0-use.local
+  resolution: "@unmango/safir-agent-client-e2e@workspace:packages/agent-client-e2e"
+  dependencies:
+    "@unmango/safir-agent-client": "workspace:packages/agent-client"
+    jest: ^27.0.6
+    ts-jest: ^27.0.4
+    typescript: ^4.3.5
+  languageName: unknown
+  linkType: soft
+
 "@unmango/safir-agent-client@workspace:packages/agent-client":
   version: 0.0.0-use.local
   resolution: "@unmango/safir-agent-client@workspace:packages/agent-client"

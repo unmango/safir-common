@@ -1,0 +1,13 @@
+{
+  "name": "@unmango/safir-agent-client-e2e",
+  "private": true,
+  "scripts": {
+    "e2e": "jest"
+  },
+  "devDependencies": {
+    "@unmango/safir-agent-client": "workspace:packages/agent-client",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "typescript": "^4.3.5"
+  }
+}

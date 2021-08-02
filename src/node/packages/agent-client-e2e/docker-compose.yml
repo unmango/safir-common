@@ -1,0 +1,14 @@
+networks:
+  agent-client:
+    driver: bridge
+
+services:
+  agent:
+    image: unstoppablemango/safir-agent
+    ports:
+      - 6969:80
+    volumes:
+      - ./data:/data
+
+  test:
+    context: .
