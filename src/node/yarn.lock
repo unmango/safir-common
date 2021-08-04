@@ -895,6 +895,7 @@ __metadata:
     rxjs: ^7.2.0
     ts-jest: ^27.0.4
     typescript: ^4.3.5
+    xhr2: ^0.2.1
   languageName: unknown
   linkType: soft
 
@@ -4212,6 +4213,13 @@ typescript@^4.3.5:
     utf-8-validate:
       optional: true
   checksum: 77ce9a21297a3a2a7a312f17bd7b98c14df11c151db12f1df814393c0e9c11e94592fc4b5b26e6d3da9de5006cbdb4bdfed0a7a2fb165fc5010d43af07b50d1c
+  languageName: node
+  linkType: hard
+
+"xhr2@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "xhr2@npm:0.2.1"
+  checksum: 650784c0b0e1c81270e2f9c6f9f68c4f1f1b324e5f07e5b4ed33e3fc20ef7bc070e4347e08e91ca2ebad49eaff8863343d3ed52adf1279a74beb64b7e0198187
   languageName: node
   linkType: hard
 
