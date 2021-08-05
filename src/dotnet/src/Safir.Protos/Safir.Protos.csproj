@@ -17,9 +17,14 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Protobuf Include="../../../../protos/**/*.proto" />
+    <Protobuf Include="../../../../protos/agent/*.proto;../../../../protos/google/api/annotations.proto;../../../../protos/google/api/http.proto"
+              ProtoRoot="../../../../protos"
+              AdditionalImportDirs="../../../../protos/google/api" />
     <Protobuf Update="../../../../protos/agent/*.proto">
       <Link>Agent\$(FileName).proto</Link>
+    </Protobuf>
+    <Protobuf Update="../../../../protos/google/api/*.proto">
+      <Link>Google\Api\$(FileName).proto</Link>
     </Protobuf>
   </ItemGroup>
 
