@@ -9,21 +9,25 @@
   <ItemGroup>
     <ProjectReference Include="..\Safir.Messaging.Abstractions\Safir.Messaging.Abstractions.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.17.3" />
     <PackageReference Include="Grpc.Core.Api" Version="2.38.1" />
     <PackageReference Include="Grpc.Tools" Version="2.38.1" PrivateAssets="All" />
   </ItemGroup>
-  
+
+  <PropertyGroup>
+    <ProtoDir>../../../../protos</ProtoDir>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Protobuf Include="../../../../protos/agent/*.proto;../../../../protos/google/api/annotations.proto;../../../../protos/google/api/http.proto"
-              ProtoRoot="../../../../protos"
-              AdditionalImportDirs="../../../../protos/google/api" />
-    <Protobuf Update="../../../../protos/agent/*.proto">
+    <Protobuf Include="$(ProtoDir)/agent/*.proto;$(ProtoDir)/google/api/annotations.proto;$(ProtoDir)/google/api/http.proto"
+              ProtoRoot="$(ProtoDir)"
+              AdditionalImportDirs="$(ProtoDir)/google/api" />
+    <Protobuf Update="$(ProtoDir)/agent/*.proto">
       <Link>Agent\$(FileName).proto</Link>
     </Protobuf>
-    <Protobuf Update="../../../../protos/google/api/*.proto">
+    <Protobuf Update="$(ProtoDir)/google/api/*.proto">
       <Link>Google\Api\$(FileName).proto</Link>
     </Protobuf>
   </ItemGroup>
