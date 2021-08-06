@@ -6,15 +6,15 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { list } from './list';
 
 test('calls agent', async () => {
-  const client = new FileSystemClient('localhost:6969');
+  await new Promise(resolve => {
+    const client = new FileSystemClient('localhost:5001');
 
-  const stream = client.list(new Empty());
-  stream.on('data', x => console.log(x));
-  stream.on('error', e => console.error(e));
-  stream.on('end', () => console.log('end'));
+    const stream = client.list(new Empty(), {});
+    stream.on('data', x => console.log(x));
+    stream.on('error', e => console.error(e));
+    stream.on('end', () => resolve);
 
-  await new Promise(res => {
-    setTimeout(res, 20000);
+    setTimeout(resolve, 20000);
   });
 
   // const result$ = list('localhost:6969');
