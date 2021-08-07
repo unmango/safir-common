@@ -8,7 +8,7 @@ option csharp_namespace = "Safir.Agent.Protos";
 service Host {
   rpc GetInfo(google.protobuf.Empty) returns (HostInfo) {
     option (google.api.http) = {
-      get: "/v1/fileSystem/list"
+      get: "/v1/host/info"
     };
   }
 }
