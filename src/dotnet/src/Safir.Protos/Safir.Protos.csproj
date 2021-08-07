@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Api.CommonProtos" Version="2.3.0" />
     <PackageReference Include="Google.Protobuf" Version="3.17.3" />
     <PackageReference Include="Grpc.Core.Api" Version="2.38.1" />
     <PackageReference Include="Grpc.Tools" Version="2.38.1" PrivateAssets="All" />
@@ -21,23 +22,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="$(ProtoDir)/agent/*.proto;$(ProtoDir)/google/api/annotations.proto;$(ProtoDir)/google/api/http.proto"
-              ProtoRoot="$(ProtoDir)"
-              AdditionalImportDirs="$(ProtoDir)/google/api" />
-    <Protobuf Update="$(ProtoDir)/agent/*.proto">
+    <Protobuf Include="$(ProtoDir)/agent/*.proto" ProtoRoot="$(ProtoDir)" >
       <Link>Agent\$(FileName).proto</Link>
     </Protobuf>
-    <Protobuf Update="$(ProtoDir)/google/api/*.proto">
-      <Link>Google\Api\$(FileName).proto</Link>
-    </Protobuf>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Grpc.HttpApi" Version="0.1.0-alpha.21317.5" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Grpc.HttpApi" Version="0.1.0-alpha.21317.5" />
   </ItemGroup>
 
 </Project>
