@@ -22,6 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Protobuf Include="$(ProtoDir)/*.proto" ProtoRoot="$(ProtoDir)" />
     <Protobuf Include="$(ProtoDir)/agent/*.proto" ProtoRoot="$(ProtoDir)">
       <Link>Agent\$(FileName).proto</Link>
     </Protobuf>
