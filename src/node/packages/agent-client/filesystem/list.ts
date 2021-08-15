@@ -14,7 +14,7 @@ export function list(
     baseUrl,
     credentials,
     options,
-  ).list(new Empty());
+  ).listFiles(new Empty());
 
   if (callbacks?.metadata) {
     stream.on('metadata', callbacks.metadata);
