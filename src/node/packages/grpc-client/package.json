@@ -1,0 +1,29 @@
+{
+  "name": "@unmango/safir-grpc-client",
+  "version": "0.0.0",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unmango/safir-common.git",
+    "directory": "src/node/packages/grpc-client"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "echo 'building' && tsc",
+    "prepack": "yarn build",
+    "publish": "yarn version $(minver -t v) && yarn npm publish --tag latest --access public"
+  },
+  "dependencies": {
+    "@unmango/safir-protos": "workspace:packages/protos",
+    "google-protobuf": "^3.17.3",
+    "grpc-web": "^1.2.1",
+    "rxjs": "^7.3.0"
+  },
+  "devDependencies": {
+    "@types/google-protobuf": "^3"
+  }
+}

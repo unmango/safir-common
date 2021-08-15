@@ -887,6 +887,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@unmango/safir-grpc-client@workspace:packages/grpc-client":
+  version: 0.0.0-use.local
+  resolution: "@unmango/safir-grpc-client@workspace:packages/grpc-client"
+  dependencies:
+    "@types/google-protobuf": ^3
+    "@unmango/safir-protos": "workspace:packages/protos"
+    google-protobuf: ^3.17.3
+    grpc-web: ^1.2.1
+    rxjs: ^7.3.0
+  languageName: unknown
+  linkType: soft
+
 "@unmango/safir-protos@workspace:packages/protos":
   version: 0.0.0-use.local
   resolution: "@unmango/safir-protos@workspace:packages/protos"
@@ -3492,6 +3504,15 @@ resolve@^1.20.0:
   dependencies:
     tslib: ~2.1.0
   checksum: 45b46a5adcfcdbb36dccde6764f186a5ed76418531ba95a3f91662435f504c1b7ad0858c23b02479f24a2f307a293c87deddfecfddfa20e249f50cecb2199654
+  languageName: node
+  linkType: hard
+
+"rxjs@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "rxjs@npm:7.3.0"
+  dependencies:
+    tslib: ~2.1.0
+  checksum: 148b28cdc6701e5d5011079523d1f2475c82b94b6945654b5045050dd4b2e1290de26f53e8e253a9392b57d08ba7b83d97b141bb25bec124c202cd0c24f9d1e5
   languageName: node
   linkType: hard
 
