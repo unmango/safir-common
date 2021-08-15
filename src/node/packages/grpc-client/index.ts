@@ -11,8 +11,6 @@ type ServerStreamingProperties<T> = {
   [P in keyof T as T[P] extends ServerStreaming<unknown, unknown> ? P : never]: T[P];
 };
 
-type Temp<T> = keyof T extends Record<string, string> ? string : never;
-
 type ObservableStream<Request, Response> = {
   (request: Request, metadata?: Metadata): Observable<Response>;
 };
@@ -22,8 +20,13 @@ type AsObservableStream<T> = T extends ServerStreaming<infer Request, infer Resp
   : never;
 
 type ObservableStreamProperties<T> = {
-  [P in keyof T as keyof ServerStreamingProperties<T>]: AsObservableStream<T[P]>;
+  [P in keyof ServerStreamingProperties<T>]: AsObservableStream<ServerStreamingProperties<T>[P]>;
 };
+
+type Test = ObservableStreamProperties<FileSystemClient>;
+
+const test: Test = {
+}
 
 type AsyncStream<Request, Response> = {
   (request: Request, metadata?: Metadata): Promise<Response[]>;
