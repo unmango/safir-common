@@ -11,6 +11,8 @@ type ServerStreamingProperties<T> = {
   [P in keyof T as T[P] extends ServerStreaming<unknown, unknown> ? P : never]: T[P];
 };
 
+type Temp<T> = keyof T extends Record<string, string> ? string : never;
+
 type ObservableStream<Request, Response> = {
   (request: Request, metadata?: Metadata): Observable<Response>;
 };
