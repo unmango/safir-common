@@ -40,10 +40,14 @@ type AsyncUnaryProperties<T> = {
       : never;
 };
 
+export type ClientConstructorParams = [
+  hostname: string,
+  credentials?: null | { [index: string]: string; },
+  options?: null | { [index: string]: any; },
+];
+
 export interface ClientConstructor<T> {
-  new(hostname: string,
-      credentials?: null | { [index: string]: string; },
-      options?: null | { [index: string]: any; }): T;
+  new(...args: ClientConstructorParams): T;
 }
 
 // TODO: Why doesn't it append `Async` in the hint text?
