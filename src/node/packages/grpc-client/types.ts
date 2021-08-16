@@ -40,6 +40,12 @@ type AsyncUnaryProperties<T> = {
       : never;
 };
 
+export interface ClientConstructor<T> {
+  new(hostname: string,
+      credentials?: null | { [index: string]: string; },
+      options?: null | { [index: string]: any; }): T;
+}
+
 // TODO: Why doesn't it append `Async` in the hint text?
 export type GrpcClient<T> =
   & ObservableStreamProperties<T>
