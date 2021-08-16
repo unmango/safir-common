@@ -1,3 +1,4 @@
+import { FileSystemClient } from '@unmango/safir-protos/dist/agent';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { ClientReadableStream, Metadata } from 'grpc-web';
 import { Observable } from 'rxjs';
@@ -55,3 +56,13 @@ export type GrpcClient<T> =
   & ObservableStreamProperties<T>
   & AsyncStreamProperties<T>
   & AsyncUnaryProperties<T>;
+
+export type ServerStreamingFix<T extends GrpcClient<unknown>, U> = {
+  [P in keyof T]: T[P] extends (...args: infer A) => infer R ?
+    R extends Observable<unknown> ? (...args: A) => Observable<U> :
+    R extends Promise<unknown[]> ? (...args: A) => Promise<U[]> :
+    T[P] : T[P];
+}
+
+const test: ServerStreaming<GrpcClient<FileSystemClient>, string> = {
+}
