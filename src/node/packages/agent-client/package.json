@@ -13,7 +13,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "echo 'building' && tsc",
+    "build": "tsc",
     "test": "jest",
     "prepack": "yarn build",
     "publish": "yarn version $(minver -t v) && yarn npm publish --tag latest --access public"

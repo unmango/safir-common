@@ -16,8 +16,7 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "build": "echo 'building' && tsc",
-    "test": "jest",
+    "build": "tsc",
     "prepack": "yarn build",
     "publish": "yarn version $(minver -t v) && yarn npm publish --tag latest --access public"
   },
