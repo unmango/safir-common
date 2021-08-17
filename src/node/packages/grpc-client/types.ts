@@ -1,4 +1,3 @@
-import { FileSystemClient } from '@unmango/safir-protos/dist/agent';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { ClientReadableStream, Metadata } from 'grpc-web';
 import { Observable } from 'rxjs';
@@ -8,8 +7,12 @@ type ExcludeEmpty<T extends unknown[]> = T extends [] ? [] :
   H extends Empty ? ExcludeEmpty<R> : [H, ...ExcludeEmpty<R>] :
   T;
 
-type ServerStreaming<Request, Response> = {
-  (request: Request, metadata?: Metadata): ClientReadableStream<Response>;
+export type ChangeReturnType<T extends Function, V> =
+  T extends (...args: infer A) => any ? (...args: A) => V :
+  never;
+
+export type ServerStreaming<Req, Res> = {
+  (request: Req, metadata?: Metadata): ClientReadableStream<Res>;
 };
 
 type ObservableStreamProperties<T> = {
