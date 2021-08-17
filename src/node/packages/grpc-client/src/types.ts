@@ -2,6 +2,11 @@ import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { ClientReadableStream, Metadata } from 'grpc-web';
 import { Observable } from 'rxjs';
 
+// Make types pretty in the VSCode mouse-over hint text
+type Normalize<T> = {
+  [P in keyof T]: T[P]
+}
+
 type ExcludeEmpty<T extends unknown[]> = T extends [] ? [] :
   T extends [infer H, ...infer R] ?
   H extends Empty ? ExcludeEmpty<R> : [H, ...ExcludeEmpty<R>] :
@@ -54,8 +59,9 @@ export interface ClientConstructor<T> {
   new(...args: ClientConstructorParams): T;
 }
 
-// TODO: Why doesn't it append `Async` in the hint text?
-export type GrpcClient<T> =
+type ClientProperties<T> =
   & ObservableStreamProperties<T>
   & AsyncStreamProperties<T>
   & AsyncUnaryProperties<T>;
+
+export type GrpcClient<T> = Normalize<ClientProperties<T>>;

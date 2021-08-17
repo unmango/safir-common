@@ -2,8 +2,8 @@ import { FileSystemClient, FileSystemEntry } from '@unmango/safir-protos/dist/ag
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { ClientReadableStream, Metadata } from 'grpc-web';
 import { Observable } from 'rxjs';
-import { toAsyncStream, toObservable } from './shared';
-import { ChangeReturnType, ClientConstructorParams, GrpcClient } from './types';
+import { toAsyncStream, toObservable } from '../shared';
+import { ChangeReturnType, ClientConstructorParams, GrpcClient } from '../types';
 
 type FixedClient = {
   [P in keyof FileSystemClient]:
@@ -14,6 +14,7 @@ type FixedClient = {
     FileSystemClient[P];
 }
 
+// So we can create a class that implements GrpcClient
 interface Interface extends GrpcClient<FixedClient> { }
 
 class Client implements Interface {

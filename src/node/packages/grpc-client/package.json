@@ -10,7 +10,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "package.json",
+    "tsconfig.json"
   ],
   "scripts": {
     "build": "echo 'building' && tsc",
